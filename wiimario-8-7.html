@@ -1310,6 +1310,23 @@ function drawStarCoins() {
   }
 }
 
+function drawRedRings() {
+  for (const rr of RED_RINGS) {
+    if (rr.collected) continue;
+    const sx = rr.x - cameraX;
+    if (sx + rr.w < 0 || sx > LW) continue;
+    ctx.save();
+    if (imgReady('赤リング')) {
+      ctx.drawImage(IMGS['赤リング'], sx, rr.y, rr.w, rr.h);
+    } else {
+      ctx.strokeStyle = '#ff0044'; ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.arc(sx + rr.w / 2, rr.y + rr.h / 2, rr.w / 2 - 8, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+
 // ============================================================
 // ゲーム初期化
 // ============================================================
