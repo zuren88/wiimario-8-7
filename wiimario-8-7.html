@@ -2416,6 +2416,22 @@ function drawOverlay(mainText, mainColor, subText) {
     updateBtn(btnInf, infiniteJump, '∞ジャンプ');
     btnInf.blur();
   });
+
+  // 背景画像の読み込み
+  const btnBgGame   = document.getElementById('btn-bg-game');
+  const gameBgInput = document.getElementById('game-bg-input');
+  btnBgGame.addEventListener('click', () => { gameBgInput.click(); btnBgGame.blur(); });
+  gameBgInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const img = new Image();
+    img.onload = () => {
+      IMGS['背景'] = img;
+      btnBgGame.textContent = '🖼 ' + file.name.slice(0, 10) + (file.name.length > 10 ? '…' : '');
+    };
+    img.src = URL.createObjectURL(file);
+    e.target.value = '';
+  });
 })();
 
 // ============================================================
