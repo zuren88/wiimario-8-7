@@ -984,7 +984,7 @@ function drawRedRings() {
 // ============================================================
 function startGame() {
   mario.x           = 200;
-  mario.y           = floorY() - MARIO_H;
+  mario.y           = getSpawnY(mario.x, MARIO_W, MARIO_H);
   mario.vx          = 0;
   mario.vy          = 0;
   mario.w           = MARIO_W;
