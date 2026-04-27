@@ -992,8 +992,7 @@ function collectCoins() {
   const bot   = Math.floor((mario.y + mario.h - 1) / TILE_SIZE);
   for (let r=top; r<=bot; r++)
     for (let c=left; c<=right; c++)
-      const tid = getTile(c,r);
-      if (tid === 8 || tid === 28) { MAP[r*MAP_COLS+c]=0; coins++; score+=200; }
+      { const tid = getTile(c,r); if (tid === 8 || tid === 28) { MAP[r*MAP_COLS+c]=0; coins++; score+=200; } }
 }
 
 // ダメージ処理（fire→super→small→死亡）
