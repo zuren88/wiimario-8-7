@@ -937,7 +937,7 @@ function getTile(c, r) {
   if (c < 0 || c >= MAP_COLS || r < 0 || r >= MAP_ROWS) return 0;
   return MAP[r * MAP_COLS + c];
 }
-function isSolid(id) { return (id >= 1 && id <= 13) && id !== 8; } // 13=使用済みブロック
+function isSolid(id) { return ((id >= 1 && id <= 13) && id !== 8) || id === 25 || id === 26 || id === 27; }
 // ベース + オーバーレイ両方を確認（氷はどちらのレイヤーでも当たり判定あり）
 function isSolidAt(c, r) {
   if (c < 0 || c >= MAP_COLS || r < 0 || r >= MAP_ROWS) return false;
