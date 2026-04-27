@@ -1034,6 +1034,17 @@ function collectStarCoins() {
   }
 }
 
+function collectRedRings() {
+  for (const rr of RED_RINGS) {
+    if (rr.collected) continue;
+    if (mario.x < rr.x + rr.w && mario.x + mario.w > rr.x &&
+        mario.y < rr.y + rr.h && mario.y + mario.h > rr.y) {
+      rr.collected = true;
+      coins += 5; score += 500;
+    }
+  }
+}
+
 function spawnStarCoinEffect(cx, cy) {
   const colors = ['#FFD700', '#FFA500', '#FFFF00', '#ffffff'];
   for (let i = 0; i < 20; i++) {
