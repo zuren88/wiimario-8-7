@@ -16,7 +16,7 @@
 <body>
   <canvas id="gameCanvas"></canvas>
 
-  <!-- デバッグ トグルボタン（右上） -->
+  <!-- デバッグ トグルボタン（左上） -->
   <div id="debug-btns" style="
     position: fixed; top: 8px; left: 8px;
     display: flex; flex-direction: column; gap: 5px; z-index: 200;">
@@ -32,7 +32,15 @@
       cursor:pointer; border-radius:3px; min-width:120px;">
       ∞ジャンプ: ON
     </button>
+    <button id="btn-bg-game" tabindex="-1" style="
+      background:#000033; color:#88aaff; border:1px solid #4466cc;
+      padding:4px 10px; font-size:12px; font-family:'Chlorinap',monospace;
+      cursor:pointer; border-radius:3px; min-width:120px;"
+      title="ゲームの背景画像をローカルファイルから読み込む">
+      🖼 背景読込
+    </button>
   </div>
+  <input type="file" id="game-bg-input" accept="image/*" style="display:none">
   <script>
 'use strict';
 
