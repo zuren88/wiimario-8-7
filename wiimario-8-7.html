@@ -1096,8 +1096,8 @@ function hitBlockFromBelow(c, r) {
   if (c < 0 || c >= MAP_COLS || r < 0 || r >= MAP_ROWS) return;
   const id = MAP[r * MAP_COLS + c];
 
-  if (id === 6) {
-    // ハテナブロック → アイテム生成・使用済みブロック(ID13)に変更
+  if (id === 6 || id === 27) {
+    // ハテナブロック（通常・赤）→ アイテム生成・使用済みブロック(ID13)に変更
     MAP[r * MAP_COLS + c] = 13;
     const itemType = (mario.state === 'small') ? 'mushroom' : 'flower';
     spawnItem(itemType, c * TILE_SIZE, r * TILE_SIZE);
