@@ -91,8 +91,8 @@ const TILE_UNIT    = 30;      // 1高さ単位 = しゃがみマリオの高さ
 const STAGE_HEIGHT = 1050;    // 1050÷50=21行
 const MAP_COLS     = STAGE_WIDTH  / TILE_SIZE; // 432
 const MAP_ROWS     = STAGE_HEIGHT / TILE_SIZE; // 21
-const GOAL_X       = STAGE_WIDTH - 150;  // ゴールポール中心X ← map-editorの🏁スニペットで更新
-const HOUSE_X      = GOAL_X + 240;       // ゴール後の家X（左端）
+let GOAL_X  = 21450;   // ← map-editor の🏁スニペットをエクスポートして貼り付けて更新
+let HOUSE_X = GOAL_X + 240; // ← 同上
 
 // マリオ寸法
 const MARIO_W        = TILE_SIZE;                    // 50px（1タイル）
