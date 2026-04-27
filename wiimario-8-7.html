@@ -1811,6 +1811,36 @@ function drawTile(sx, sy, id) {
       ctx.fillRect(sx,sy,T,T); ctx.strokeRect(sx,sy,T,T);
       break;
     }
+    case 25: { // 地面火山上
+      if (imgReady('地面火山上')) { ctx.drawImage(IMGS['地面火山上'], sx, sy, T, T); }
+      else { ctx.fillStyle='#5c2000'; ctx.strokeStyle='#000'; ctx.lineWidth=2; ctx.fillRect(sx,sy,T,T); ctx.strokeRect(sx,sy,T,T); }
+      break;
+    }
+    case 26: { // 地面火山中
+      if (imgReady('地面火山中')) { ctx.drawImage(IMGS['地面火山中'], sx, sy, T, T); }
+      else { ctx.fillStyle='#3a1500'; ctx.fillRect(sx,sy,T,T); }
+      break;
+    }
+    case 27: { // ハテナブロック赤
+      if (imgReady('ハテナブロック赤')) { ctx.drawImage(IMGS['ハテナブロック赤'], sx, sy, T, T); }
+      else {
+        ctx.fillStyle='#fff'; ctx.strokeStyle='#cc0000'; ctx.lineWidth=2;
+        ctx.fillRect(sx,sy,T,T); ctx.strokeRect(sx,sy,T,T);
+        ctx.fillStyle='#cc0000'; ctx.font="bold 22px 'Chlorinap', monospace";
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText('?',sx+T/2,sy+T/2);
+      }
+      break;
+    }
+    case 28: { // コイン赤
+      if (imgReady('コイン赤')) { ctx.drawImage(IMGS['コイン赤'], sx, sy, T, T); }
+      else {
+        ctx.fillStyle='#fff'; ctx.strokeStyle='#cc0000'; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.arc(sx+T/2,sy+T/2,T/2-5,0,Math.PI*2);
+        ctx.fill(); ctx.stroke();
+      }
+      break;
+    }
     case 14: { // スターコイン
       if (imgReady('スターコイン')) {
         ctx.drawImage(IMGS['スターコイン'], sx, sy, T, T);
