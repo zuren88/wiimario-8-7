@@ -1329,8 +1329,19 @@ function drawGreenBlob(cx, cy, s) {
   ctx.restore();
 }
 
-// ---- タイトル画面 ----
+// ---- タイトル画面（仮：白背景） ----
 function drawTitle() {
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, LW, LH);
+  if (Math.floor(Date.now() / 500) % 2 === 0) {
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = "30px 'Chlorinap', monospace";
+    ctx.fillStyle = '#000000';
+    ctx.fillText('▶  Enter キーで開始', LW / 2, LH / 2);
+  }
+}
+/* ↓ 以下の旧タイトル描画コードは無効化 */
+function _drawTitle_old_unused() {
   // 黒背景
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, LW, LH);
