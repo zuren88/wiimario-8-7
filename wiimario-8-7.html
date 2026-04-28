@@ -1580,6 +1580,17 @@ function drawTile(sx, sy, id) {
     }
     case 4: case 5: // 土管はdrawPipes()で描画するためスキップ
       break;
+    case 21: case 22: { // 横向き土管（右/左）
+      if (imgReady('土管')) {
+        ctx.translate(sx + T/2, sy + T/2);
+        ctx.rotate(id === 21 ? Math.PI/2 : -Math.PI/2);
+        ctx.drawImage(IMGS['土管'], -T/2, -T/2, T, T);
+      } else {
+        ctx.fillStyle = '#1a6b1a'; ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
+        ctx.fillRect(sx, sy, T, T); ctx.strokeRect(sx, sy, T, T);
+      }
+      break;
+    }
     case 6: { // ハテナブロック
       if (imgReady('ハテナブロック')) { ctx.drawImage(IMGS['ハテナブロック'], sx, sy, T, T); }
       else {
