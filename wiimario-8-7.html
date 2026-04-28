@@ -1442,6 +1442,8 @@ function update(dt) {
   collectCoins();
   collectStarCoins();
   collectRedRings();
+  updateLava(dt);
+  checkLavaCollision();
   collectItems();
   checkEnemyStompAndFireball();
   checkEnemyCollision();
