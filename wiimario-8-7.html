@@ -2396,6 +2396,8 @@ function drawMario() {
 
 // ---- ゴールポール ＋ 家 ----
 function drawGoalPole() {
+  if (GOAL_X < 0) return; // 未設定なら描画しない
+
   const fy = floorY();
 
   // ── ゴールポール（縦横2倍） ──
