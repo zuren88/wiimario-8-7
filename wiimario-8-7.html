@@ -1562,6 +1562,12 @@ function drawTile(sx, sy, id) {
       }
       break;
     }
+    case 32: { // すり抜け地面（70%不透明・下からジャンプすり抜け可）
+      ctx.globalAlpha = 0.7;
+      if (imgReady('すり抜け地面')) { ctx.drawImage(IMGS['すり抜け地面'], sx, sy, T, T); }
+      else { ctx.fillStyle='#a0c8ff'; ctx.strokeStyle='#4488cc'; ctx.lineWidth=2; ctx.fillRect(sx,sy,T,T); ctx.strokeRect(sx,sy,T,T); }
+      break;
+    }
     case 14: { // スターコイン
       if (imgReady('スターコイン')) {
         ctx.drawImage(IMGS['スターコイン'], sx, sy, T, T);
