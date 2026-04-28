@@ -852,10 +852,6 @@ function collectRedRings() {
 // ============================================================
 // 溶岩（LAVA）
 // ============================================================
-let LAVA_ZONES    = [];  // { row, colStart, colEnd }
-let LAVA_SPLASHES = [];  // { col, row, timer, phase, height, maxHeight, speed }
-let lavaTime      = 0;
-
 function addLavaZone(row, colStart, colEnd) {
   LAVA_ZONES.push({ row, colStart, colEnd });
 }
