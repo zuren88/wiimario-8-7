@@ -2280,6 +2280,29 @@ function drawTiles() {
     while (c <= endCol) {
       const id = MAP[r*MAP_COLS+c];
       if (id === 0) { c++; continue; }
+      if (id === 21 || id === 22) {
+        // 横向き土管：左上コーナーのみ全体を1枚で描画（マップエディターと同じ方式）
+        const prevRowId = r > 0 ? MAP[(r-1)*MAP_COLS+c] : 0;
+        const prevColId = c > 0 ? MAP[r*MAP_COLS+(c-1)] : 0;
+        if (prevRowId === id || prevColId === id) { c++; continue; } // 左上以外はスキップ
+        // 実際の幅・高さを計測
+        let ew = 0; while (c+ew < MAP_COLS && MAP[r*MAP_COLS+c+ew] === id) ew++;
+        let eh = 0; while (r+eh < MAP_ROWS && MAP[(r+eh)*MAP_COLS+c] === id) eh++;
+        const pipeX = c*TILE_SIZE - cameraX, pipeY = r*TILE_SIZE;
+        const pipeW = ew*TILE_SIZE, pipeH = eh*TILE_SIZE;
+        if (imgReady('土管')) {
+          ctx.save();
+          ctx.translate(pipeX + pipeW/2, pipeY + pipeH/2);
+          ctx.rotate(id === 21 ? Math.PI/2 : -Math.PI/2);
+          // 回転後に元の幅・高さを入れ替えて描画することで画面上の専有面積が一致する
+          ctx.drawImage(IMGS['土管'], -pipeH/2, -pipeW/2, pipeH, pipeW);
+          ctx.restore();
+        } else {
+          ctx.fillStyle='#1a6b1a'; ctx.strokeStyle='#000'; ctx.lineWidth=2;
+          ctx.fillRect(pipeX, pipeY, pipeW, pipeH); ctx.strokeRect(pipeX, pipeY, pipeW, pipeH);
+        }
+        c += ew; continue;
+      }
       if (id === 11) {
         // 土管中: 連続する幅を1枚でストレッチ描画（エディタと同様）
         let w = 0;
