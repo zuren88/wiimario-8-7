@@ -1509,6 +1509,7 @@ function draw() {
   if (gameState === 'title') { drawTitle(); return; }
 
   drawBackground();
+  drawLava();
   drawPakkunEnemies();  // パックンをタイル・土管の下レイヤーで描画
   drawTiles();
   drawOverlayTiles();
