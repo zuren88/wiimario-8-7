@@ -364,14 +364,17 @@ function spawnFireball(type, sx, sy, vx, vy) {
   hLine(200,12,9,25);
   hLine(209,12,38,26);
   hLine(247,12,3,25);
+  hLine(475,12,7,22);
   hLine(482,12,3,2);
   hLine(0,13,23,26);
   hLine(200,13,45,26);
   hLine(245,13,3,25);
+  hLine(475,13,7,22);
   hLine(482,13,3,2);
   hLine(0,14,22,26);
   hLine(200,14,43,26);
   hLine(243,14,3,25);
+  hLine(475,14,7,22);
   hLine(482,14,3,2);
   hLine(0,15,21,26);
   hLine(203,15,38,26);
@@ -1580,14 +1583,14 @@ function drawTile(sx, sy, id) {
     }
     case 4: case 5: // 土管はdrawPipes()で描画するためスキップ
       break;
-    case 21: case 22: { // 横向き土管（右/左）
+    case 21: case 22: { // 横向き土管（右向き/左向き）
       if (imgReady('土管')) {
         ctx.translate(sx + T/2, sy + T/2);
         ctx.rotate(id === 21 ? Math.PI/2 : -Math.PI/2);
         ctx.drawImage(IMGS['土管'], -T/2, -T/2, T, T);
       } else {
-        ctx.fillStyle = '#1a6b1a'; ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
-        ctx.fillRect(sx, sy, T, T); ctx.strokeRect(sx, sy, T, T);
+        ctx.fillStyle='#1a6b1a'; ctx.strokeStyle='#000'; ctx.lineWidth=2;
+        ctx.fillRect(sx,sy,T,T); ctx.strokeRect(sx,sy,T,T);
       }
       break;
     }
