@@ -641,6 +641,12 @@ function resolveTileY() {
     const row = Math.floor((mario.y + mario.h) / TILE_SIZE);
     if (isSolidAt(left,row) || isSolidAt(right,row)) {
       mario.y = row * TILE_SIZE - mario.h; mario.vy = 0; mario.onGround = true;
+    } else if (isSemiSolidAt(left,row) || isSemiSolidAt(right,row)) {
+      // すり抜け地面：降下中のみ着地（真上から乗る場合のみ）
+      const tileTop = row * TILE_SIZE;
+      if (mario.y + mario.h - mario.vy * 0.016 <= tileTop + 4) {
+        mario.y = tileTop - mario.h; mario.vy = 0; mario.onGround = true;
+      }
     }
   } else {
     // 上昇中の頭突き判定
