@@ -607,10 +607,15 @@ function getTile(c, r) {
   return MAP[r * MAP_COLS + c];
 }
 function isSolid(id) { return ((id >= 1 && id <= 13) && id !== 8) || id === 25 || id === 26 || id === 27; }
+function isSemiSolid(id) { return id === 32; } // 上からのみ着地可・下からすり抜け可
 // ベース + オーバーレイ両方を確認（氷はどちらのレイヤーでも当たり判定あり）
 function isSolidAt(c, r) {
   if (c < 0 || c >= MAP_COLS || r < 0 || r >= MAP_ROWS) return false;
   return isSolid(MAP[r * MAP_COLS + c]) || isSolid(MAP_OVERLAY[r * MAP_COLS + c]);
+}
+function isSemiSolidAt(c, r) {
+  if (c < 0 || c >= MAP_COLS || r < 0 || r >= MAP_ROWS) return false;
+  return isSemiSolid(MAP[r * MAP_COLS + c]);
 }
 
 function resolveTileX() {
