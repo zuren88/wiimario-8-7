@@ -99,8 +99,8 @@ const TILE_UNIT    = 30;      // 1高さ単位 = しゃがみマリオの高さ
 const STAGE_HEIGHT = 1050;    // 1050÷50=21行
 const MAP_COLS     = STAGE_WIDTH  / TILE_SIZE; // 432
 const MAP_ROWS     = STAGE_HEIGHT / TILE_SIZE; // 21
-let GOAL_X  = 21450;   // ← map-editor の🏁スニペットをエクスポートして貼り付けて更新
-let HOUSE_X = GOAL_X + 240; // ← 同上
+let GOAL_X  = -1;  // -1=未設定。map-editor の🏁スニペットで「GOAL_X = 〇〇;」を貼り付けて設定
+let HOUSE_X = -1;  // 同上
 
 // マリオ寸法
 const MARIO_W        = TILE_SIZE;                    // 50px（1タイル）
@@ -274,29 +274,129 @@ function spawnFireball(type, sx, sy, vx, vy) {
   ENEMIES.length = 0;
   STAR_COINS.length = 0;
 
+  // ── 敵（addFireBros）──
+  addStarCoin(434,12);
+
   // ── タイル（setT/hLine）──
+  hLine(482,0,3,11);
+  hLine(482,1,3,11);
   hLine(47,2,2,27);
+  hLine(214,2,36,25);
+  setT(371,2,8);
+  setT(373,2,8);
+  hLine(482,2,3,11);
   hLine(16,3,2,27);
+  setT(214,3,25);
+  hLine(215,3,34,26);
+  setT(249,3,25);
+  hLine(275,3,2,27);
+  setT(369,3,8);
+  setT(375,3,8);
+  hLine(482,3,3,11);
+  hLine(105,4,2,8);
+  hLine(125,4,3,8);
+  setT(214,4,25);
+  hLine(215,4,34,26);
+  setT(249,4,25);
+  hLine(482,4,3,11);
+  setT(104,5,8);
+  setT(107,5,8);
+  setT(124,5,8);
+  setT(128,5,8);
+  hLine(195,5,2,8);
+  hLine(207,5,4,32);
+  setT(214,5,25);
+  hLine(215,5,34,26);
+  setT(249,5,25);
+  hLine(482,5,3,11);
+  setT(103,6,8);
+  setT(108,6,8);
+  setT(123,6,8);
+  setT(129,6,8);
+  setT(197,6,8);
+  setT(214,6,25);
+  hLine(215,6,34,26);
+  setT(249,6,25);
+  setT(300,6,8);
+  hLine(482,6,3,11);
+  hLine(182,7,3,8);
+  setT(198,7,8);
+  setT(214,7,25);
+  hLine(215,7,34,26);
+  setT(249,7,25);
+  hLine(301,7,2,8);
+  hLine(318,7,4,8);
+  hLine(482,7,3,11);
+  hLine(161,8,3,8);
+  setT(181,8,8);
+  setT(185,8,8);
+  hLine(210,8,4,32);
+  setT(214,8,25);
+  hLine(215,8,34,26);
+  setT(249,8,25);
+  setT(302,8,8);
+  setT(317,8,8);
+  setT(322,8,8);
+  hLine(451,8,3,8);
+  hLine(482,8,3,11);
   hLine(0,9,27,25);
+  setT(160,9,8);
+  setT(164,9,8);
+  setT(214,9,25);
+  hLine(215,9,34,26);
+  setT(249,9,25);
+  setT(454,9,8);
+  hLine(482,9,3,11);
   hLine(0,10,27,26);
+  setT(214,10,25);
+  hLine(215,10,34,26);
+  setT(249,10,25);
+  setT(455,10,8);
+  hLine(482,10,3,11);
   hLine(0,11,27,26);
   hLine(209,11,5,25);
-  hLine(214,11,4,26);
+  hLine(214,11,35,26);
+  setT(249,11,25);
+  setT(455,11,8);
+  hLine(482,11,3,11);
   hLine(0,12,26,26);
+  hLine(197,12,3,32);
   hLine(200,12,9,25);
-  hLine(209,12,9,26);
+  hLine(209,12,38,26);
+  hLine(247,12,3,25);
+  hLine(482,12,3,8);
   hLine(0,13,23,26);
-  hLine(200,13,18,26);
+  hLine(200,13,45,26);
+  hLine(245,13,3,25);
+  hLine(482,13,3,8);
   hLine(0,14,22,26);
-  hLine(200,14,18,26);
+  hLine(200,14,43,26);
+  hLine(243,14,3,25);
+  hLine(482,14,3,8);
   hLine(0,15,21,26);
-  hLine(203,15,15,26);
+  hLine(203,15,38,26);
+  hLine(241,15,2,25);
+  hLine(470,15,15,25);
   hLine(3,16,16,26);
-  hLine(204,16,14,26);
+  hLine(204,16,36,26);
+  hLine(240,16,2,25);
+  hLine(453,16,6,32);
+  hLine(459,16,11,25);
+  hLine(470,16,15,26);
   hLine(4,17,14,26);
-  hLine(204,17,14,26);
+  hLine(204,17,35,26);
+  setT(239,17,25);
+  setT(459,17,25);
+  hLine(460,17,25,26);
   hLine(6,18,11,26);
-  hLine(204,18,14,26);
+  hLine(204,18,34,26);
+  setT(238,18,25);
+  setT(459,18,25);
+  hLine(460,18,25,26);
+  hLine(218,19,19,26);
+  hLine(237,19,2,25);
+  hLine(218,20,19,26);
+  setT(237,20,25);
 
 })();
 // ── 旧エクスポート互換: MAPにタイルID14が残っていたらSTAR_COINSエンティティに変換 ──
