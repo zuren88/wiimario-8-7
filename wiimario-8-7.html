@@ -820,6 +820,134 @@ function collectRedRings() {
   }
 }
 
+// ============================================================
+// 溶岩（LAVA）
+// ============================================================
+let LAVA_ZONES    = [];  // { row, colStart, colEnd }
+let LAVA_SPLASHES = [];  // { col, row, timer, phase, height, maxHeight, speed }
+let lavaTime      = 0;
+
+function addLavaZone(row, colStart, colEnd) {
+  LAVA_ZONES.push({ row, colStart, colEnd });
+}
+function addLavaSplash(col, row) {
+  LAVA_SPLASHES.push({ col, row, timer: Math.random() * 3, phase: 0, height: 0, maxHeight: 0, speed: 0 });
+}
+
+function updateLava(dt) {
+  lavaTime += dt;
+  for (const s of LAVA_SPLASHES) {
+    if (s.phase === 0) {
+      s.timer -= dt;
+      if (s.timer <= 0) {
+        s.phase = 1;
+        s.maxHeight = TILE_SIZE * (2 + Math.random() * 5);
+        s.speed     = s.maxHeight / 0.45;
+        s.height    = 0;
+      }
+    } else if (s.phase === 1) {
+      s.height += s.speed * dt;
+      if (s.height >= s.maxHeight) { s.height = s.maxHeight; s.phase = 2; }
+    } else {
+      s.height -= s.speed * dt;
+      if (s.height <= 0) { s.height = 0; s.phase = 0; s.timer = 2 + Math.random() * 4; }
+    }
+  }
+}
+
+function checkLavaCollision() {
+  if (mario.invincibleTimer > 0) return;
+  const mb = mario.y + mario.h, ml = mario.x, mr = mario.x + mario.w;
+  for (const z of LAVA_ZONES) {
+    if (mb >= z.row * TILE_SIZE - 8 && mr > z.colStart * TILE_SIZE && ml < (z.colEnd + 1) * TILE_SIZE) {
+      gameState = 'gameover'; return;
+    }
+  }
+  for (const s of LAVA_SPLASHES) {
+    if (s.phase === 0 || s.height < 4) continue;
+    const baseY = s.row * TILE_SIZE;
+    if (ml < (s.col + 1) * TILE_SIZE && mr > s.col * TILE_SIZE &&
+        mario.y + mario.h > baseY - s.height && mario.y < baseY) {
+      gameState = 'gameover'; return;
+    }
+  }
+}
+
+function drawLava() {
+  if (LAVA_ZONES.length === 0) return;
+  const T = TILE_SIZE;
+  const wAmp = 7, wFreq = 0.018, wSpeed = 2.4;
+
+  for (const z of LAVA_ZONES) {
+    const x1 = z.colStart * T - cameraX;
+    const x2 = (z.colEnd + 1) * T - cameraX;
+    const baseY = z.row * T;
+    if (x2 < -10 || x1 > LW + 10) continue;
+
+    // 溶岩ボディ（グラデーション）
+    const grad = ctx.createLinearGradient(0, baseY, 0, LH);
+    grad.addColorStop(0.00, '#FF5500');
+    grad.addColorStop(0.25, '#CC2200');
+    grad.addColorStop(0.70, '#991100');
+    grad.addColorStop(1.00, '#550000');
+    ctx.fillStyle = grad;
+
+    // 波打つ上面パス
+    ctx.beginPath();
+    ctx.moveTo(x1, LH);
+    ctx.lineTo(x1, baseY);
+    for (let px = 0; px <= x2 - x1; px += 3) {
+      const wx = z.colStart * T + px;
+      ctx.lineTo(x1 + px, baseY - wAmp * Math.sin(lavaTime * wSpeed + wx * wFreq));
+    }
+    ctx.lineTo(x2, baseY);
+    ctx.lineTo(x2, LH);
+    ctx.closePath();
+    ctx.fill();
+
+    // 輝く表面ライン
+    ctx.strokeStyle = '#FF8800';
+    ctx.lineWidth   = 2.5;
+    ctx.beginPath();
+    for (let px = 0; px <= x2 - x1; px += 3) {
+      const wx = z.colStart * T + px;
+      const wy = baseY - wAmp * Math.sin(lavaTime * wSpeed + wx * wFreq);
+      px === 0 ? ctx.moveTo(x1, wy) : ctx.lineTo(x1 + px, wy);
+    }
+    ctx.stroke();
+  }
+
+  // 吹き出し
+  for (const s of LAVA_SPLASHES) {
+    if (s.phase === 0 || s.height < 2) continue;
+    const sx    = s.col * T - cameraX;
+    const baseY = s.row * T;
+    const topY  = baseY - s.height;
+    const cx    = sx + T * 0.5;
+    const ratio = s.height / s.maxHeight;    // 先端ほど細い
+    const hw    = T * 0.45 * ratio;
+    if (sx < -T * 3 || sx > LW + T * 3) continue;
+
+    const sg = ctx.createLinearGradient(0, topY, 0, baseY);
+    sg.addColorStop(0, 'rgba(255,200,50,0.95)');
+    sg.addColorStop(0.4, '#FF5500');
+    sg.addColorStop(1, '#CC2200');
+    ctx.fillStyle = sg;
+    ctx.beginPath();
+    ctx.moveTo(cx, topY);
+    ctx.lineTo(cx - hw, baseY);
+    ctx.lineTo(cx + hw, baseY);
+    ctx.closePath();
+    ctx.fill();
+
+    // 先端の光
+    ctx.fillStyle = '#FFDD00';
+    ctx.beginPath();
+    ctx.arc(cx, topY, Math.max(3, T * 0.12 * ratio), 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
 function spawnStarCoinEffect(cx, cy) {
   const colors = ['#FFD700', '#FFA500', '#FFFF00', '#ffffff'];
   for (let i = 0; i < 20; i++) {
