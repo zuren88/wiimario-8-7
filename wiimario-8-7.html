@@ -426,8 +426,48 @@ addLavaZone(19, 0, 217);
 addLavaZone(19, 239, 484);
 addLavaZone(20, 0, 217);
 addLavaZone(20, 238, 484);
+addLavaSplash(336, 15);
+addLavaSplash(337, 15);
+addLavaSplash(338, 15);
+addLavaSplash(339, 15);
+addLavaSplash(368, 15);
+addLavaSplash(369, 15);
+addLavaSplash(370, 15);
+addLavaSplash(374, 15);
+addLavaSplash(375, 15);
+addLavaSplash(376, 15);
+addLavaSplash(379, 15);
+addLavaSplash(380, 15);
+addLavaSplash(381, 15);
+addLavaSplash(0, 18);
+addLavaSplash(1, 18);
+addLavaSplash(2, 18);
+addLavaSplash(3, 18);
+addLavaSplash(18, 18);
+addLavaSplash(19, 18);
+addLavaSplash(20, 18);
+addLavaSplash(63, 18);
+addLavaSplash(64, 18);
+addLavaSplash(65, 18);
+addLavaSplash(66, 18);
+addLavaSplash(105, 18);
+addLavaSplash(106, 18);
+addLavaSplash(107, 18);
+addLavaSplash(108, 18);
+addLavaSplash(123, 18);
+addLavaSplash(124, 18);
+addLavaSplash(125, 18);
+addLavaSplash(126, 18);
+addLavaSplash(161, 18);
+addLavaSplash(162, 18);
+addLavaSplash(163, 18);
+addLavaSplash(164, 18);
+addLavaSplash(181, 18);
+addLavaSplash(182, 18);
+addLavaSplash(183, 18);
 // 土管（左向き）
 // lPipe(475, 12, 7, 3);
+
 
 
 })();
@@ -890,7 +930,7 @@ function checkLavaCollision() {
   }
   for (const s of LAVA_SPLASHES) {
     if (s.phase === 0 || s.height < 4) continue;
-    const baseY = s.row * TILE_SIZE;
+    const baseY = (s.row + 1) * TILE_SIZE; // 行の下端 = 溶岩面
     if (ml < (s.col + 1) * TILE_SIZE && mr > s.col * TILE_SIZE &&
         mario.y + mario.h > baseY - s.height && mario.y < baseY) {
       gameState = 'gameover'; return;
@@ -901,76 +941,103 @@ function checkLavaCollision() {
 function drawLava() {
   if (LAVA_ZONES.length === 0) return;
   const T = TILE_SIZE;
-  const wAmp = 7, wFreq = 0.018, wSpeed = 2.4;
+  const wAmp = 8, wFreq = 0.016, wSpeed = 2.2;
 
+  ctx.save();
+
+  // ── 溶岩ゾーン ──
   for (const z of LAVA_ZONES) {
-    const x1 = z.colStart * T - cameraX;
-    const x2 = (z.colEnd + 1) * T - cameraX;
+    const x1    = z.colStart * T - cameraX;
+    const x2    = (z.colEnd + 1) * T - cameraX;
     const baseY = z.row * T;
+    const w     = x2 - x1;
     if (x2 < -10 || x1 > LW + 10) continue;
 
-    // 溶岩ボディ（グラデーション）
-    const grad = ctx.createLinearGradient(0, baseY, 0, LH);
-    grad.addColorStop(0.00, '#FF5500');
-    grad.addColorStop(0.25, '#CC2200');
-    grad.addColorStop(0.70, '#991100');
-    grad.addColorStop(1.00, '#550000');
+    // 波ポイントを先に計算（ボディと表面ラインで共有）
+    const wpts = [];
+    for (let px = 0; px <= w; px += 2) {
+      const wx = z.colStart * T + px;
+      wpts.push([x1 + px, baseY - wAmp * Math.sin(lavaTime * wSpeed + wx * wFreq)
+                         - wAmp * 0.4 * Math.sin(lavaTime * 1.3 + wx * 0.031)]); // 2重波
+    }
+
+    // ── ボディ（白黄→橙→深赤のグラデーション）──
+    const grad = ctx.createLinearGradient(0, baseY - wAmp, 0, LH);
+    grad.addColorStop(0.00, '#FFAA00');   // 表面：明るいオレンジ黄
+    grad.addColorStop(0.04, '#FF5500');   // 橙赤
+    grad.addColorStop(0.18, '#CC1A00');   // 赤
+    grad.addColorStop(0.45, '#8A0000');   // 深赤
+    grad.addColorStop(1.00, '#350000');   // 最暗
     ctx.fillStyle = grad;
 
-    // 波打つ上面パス
     ctx.beginPath();
     ctx.moveTo(x1, LH);
-    ctx.lineTo(x1, baseY);
-    for (let px = 0; px <= x2 - x1; px += 3) {
-      const wx = z.colStart * T + px;
-      ctx.lineTo(x1 + px, baseY - wAmp * Math.sin(lavaTime * wSpeed + wx * wFreq));
-    }
-    ctx.lineTo(x2, baseY);
+    wpts.forEach(([px, py]) => ctx.lineTo(px, py));
     ctx.lineTo(x2, LH);
     ctx.closePath();
     ctx.fill();
 
-    // 輝く表面ライン
-    ctx.strokeStyle = '#FF8800';
-    ctx.lineWidth   = 2.5;
+    // ── 表面グロー（ぼんやり橙の光輪）──
+    ctx.shadowColor = '#FF6000';
+    ctx.shadowBlur  = 14;
+    ctx.strokeStyle = '#FF7000';
+    ctx.lineWidth   = 4;
     ctx.beginPath();
-    for (let px = 0; px <= x2 - x1; px += 3) {
-      const wx = z.colStart * T + px;
-      const wy = baseY - wAmp * Math.sin(lavaTime * wSpeed + wx * wFreq);
-      px === 0 ? ctx.moveTo(x1, wy) : ctx.lineTo(x1 + px, wy);
-    }
+    wpts.forEach(([px, py], i) => i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py));
     ctx.stroke();
+
+    // ── 表面ライン（細く鮮やかな黄白）──
+    ctx.shadowColor = '#FFE000';
+    ctx.shadowBlur  = 8;
+    ctx.strokeStyle = '#FFD040';
+    ctx.lineWidth   = 1.5;
+    ctx.beginPath();
+    wpts.forEach(([px, py], i) => i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py));
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
   }
 
-  // 吹き出し
+  // ── 吹き出し ──
   for (const s of LAVA_SPLASHES) {
     if (s.phase === 0 || s.height < 2) continue;
     const sx    = s.col * T - cameraX;
-    const baseY = s.row * T;
+    const baseY = (s.row + 1) * T;          // マーカー行の下端 = 溶岩面
     const topY  = baseY - s.height;
     const cx    = sx + T * 0.5;
-    const ratio = s.height / s.maxHeight;    // 先端ほど細い
-    const hw    = T * 0.45 * ratio;
-    if (sx < -T * 3 || sx > LW + T * 3) continue;
+    const ratio = Math.min(s.height / s.maxHeight, 1);
+    const hw    = T * 0.48 * Math.sqrt(ratio); // 根元は太く・先端は細く
+    if (sx < -T * 4 || sx > LW + T * 4) continue;
 
+    // 本体グラデーション（先端=白黄 → 根元=深赤）
     const sg = ctx.createLinearGradient(0, topY, 0, baseY);
-    sg.addColorStop(0, 'rgba(255,200,50,0.95)');
-    sg.addColorStop(0.4, '#FF5500');
-    sg.addColorStop(1, '#CC2200');
+    sg.addColorStop(0.00, 'rgba(255,255,200,1)'); // 先端：白黄
+    sg.addColorStop(0.12, '#FFD000');             // 鮮黄
+    sg.addColorStop(0.35, '#FF5500');             // 橙
+    sg.addColorStop(0.65, '#DD1800');             // 赤橙
+    sg.addColorStop(1.00, '#990000');             // 根元：深赤
     ctx.fillStyle = sg;
+
+    // 先端に向かって絞れる曲線シルエット
     ctx.beginPath();
     ctx.moveTo(cx, topY);
-    ctx.lineTo(cx - hw, baseY);
-    ctx.lineTo(cx + hw, baseY);
+    ctx.quadraticCurveTo(cx - hw * 1.1, topY + s.height * 0.55, cx - hw * 0.5, baseY);
+    ctx.lineTo(cx + hw * 0.5, baseY);
+    ctx.quadraticCurveTo(cx + hw * 1.1, topY + s.height * 0.55, cx, topY);
     ctx.closePath();
     ctx.fill();
 
-    // 先端の光
-    ctx.fillStyle = '#FFDD00';
+    // 先端グロー
+    ctx.shadowColor = '#FFE000';
+    ctx.shadowBlur  = 18;
+    ctx.fillStyle   = 'rgba(255,255,180,0.95)';
     ctx.beginPath();
-    ctx.arc(cx, topY, Math.max(3, T * 0.12 * ratio), 0, Math.PI * 2);
+    ctx.arc(cx, topY + 2, Math.max(3, T * 0.18 * ratio), 0, Math.PI * 2);
     ctx.fill();
+    ctx.shadowBlur = 0;
   }
+
+  ctx.restore();
 }
 
 function spawnStarCoinEffect(cx, cy) {
