@@ -1352,8 +1352,8 @@ function update(dt) {
   if (mario.x < 0)                     { mario.x = 0;                     mario.vx = 0; }
   if (mario.x + mario.w > STAGE_WIDTH) { mario.x = STAGE_WIDTH - mario.w; mario.vx = 0; }
 
-  // ゴールポール接触判定
-  if (mario.x + mario.w >= GOAL_X - 3 && mario.x < GOAL_X + 9) {
+  // ゴールポール接触判定（GOAL_X が設定済みの場合のみ）
+  if (GOAL_X >= 0 && mario.x + mario.w >= GOAL_X - 3 && mario.x < GOAL_X + 9) {
     startGoal();
     return;
   }
