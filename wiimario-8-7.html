@@ -596,7 +596,7 @@ function getSpawnY(spawnX, marioW, marioH) {
   let topRow = MAP_ROWS - 1;
   for (let col = colL; col <= colR; col++) {
     for (let row = 0; row < MAP_ROWS; row++) {
-      if (isSolidAt(col, row)) { topRow = Math.min(topRow, row); break; }
+      if (isSolidAt(col, row) || isSemiSolidAt(col, row)) { topRow = Math.min(topRow, row); break; }
     }
   }
   return topRow * TILE_SIZE - marioH;
