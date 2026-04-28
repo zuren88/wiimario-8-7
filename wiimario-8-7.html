@@ -191,6 +191,11 @@ function addRedRing(c, r) {
   RED_RINGS.push({ x: c * TILE_SIZE, y: r * TILE_SIZE, w: TILE_SIZE * 2, h: TILE_SIZE * 2, collected: false });
 }
 
+// 溶岩（配列宣言は buildMap より前に必要）
+let LAVA_ZONES    = [];
+let LAVA_SPLASHES = [];
+let lavaTime      = 0;
+
 // ============================================================
 // リフト（横6タイル・水平往復）
 // ============================================================
@@ -403,6 +408,27 @@ function spawnFireball(type, sx, sy, vx, vy) {
   hLine(237,19,2,25);
   hLine(218,20,19,26);
   setT(237,20,25);
+// ── 溶岩設定（buildMap 内に貼り付け）──
+addLavaZone(16, 242, 449);
+addLavaZone(17, 240, 316);
+addLavaZone(17, 318, 321);
+addLavaZone(17, 323, 335);
+addLavaZone(17, 337, 450);
+addLavaZone(18, 239, 301);
+addLavaZone(18, 303, 304);
+addLavaZone(18, 306, 319);
+addLavaZone(18, 321, 343);
+addLavaZone(18, 345, 431);
+addLavaZone(18, 433, 435);
+addLavaZone(18, 437, 451);
+addLavaZone(18, 453, 458);
+addLavaZone(19, 0, 217);
+addLavaZone(19, 239, 484);
+addLavaZone(20, 0, 217);
+addLavaZone(20, 238, 484);
+// 土管（左向き）
+// lPipe(475, 12, 7, 3);
+
 
 })();
 // ── 旧エクスポート互換: MAPにタイルID14が残っていたらSTAR_COINSエンティティに変換 ──
