@@ -949,7 +949,7 @@ function updateLava(dt) {
       g.timer -= dt;
       if (g.timer <= 0) {
         g.phase = 1;
-        g.maxHeight = TILE_SIZE * (3 + Math.random() * 5);
+        g.maxHeight = TILE_SIZE * 5;
         g.speed     = g.maxHeight / 0.45;
         g.height    = 0;
         // パーティクル生成（噴出時）
