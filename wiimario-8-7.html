@@ -1161,9 +1161,9 @@ function drawLava() {
     function gPath() {
       ctx.beginPath();
       ctx.moveTo(gcx - colHW, baseY);
-      ctx.quadraticCurveTo(gcx - colHW * 1.07, topY + g.height * 0.5, gcx - colHW, topY);
+      ctx.lineTo(gcx - colHW, topY);
       ctx.arc(gcx, topY, colHW, Math.PI, 0, true);
-      ctx.quadraticCurveTo(gcx + colHW * 1.07, topY + g.height * 0.5, gcx + colHW, baseY);
+      ctx.lineTo(gcx + colHW, baseY);
       ctx.closePath();
     }
 
