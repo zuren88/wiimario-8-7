@@ -1156,23 +1156,29 @@ function drawLava() {
     sg.addColorStop(1.00, '#990000');
     ctx.fillStyle = sg;
 
-    // 幅広シルエット（根元=全幅・先端に向けて絞れる）
+    // 幅広シルエット（根元=全幅・先端は約2タイル幅の丸みキャップ）
     const rootHW = gw * 0.46;
+    const tipHW  = Math.min(T, rootHW * 0.8); // 先端半幅（最大1タイル）
+    const arcCY  = topY + tipHW;               // 丸みの中心Y
     ctx.beginPath();
-    ctx.moveTo(gcx, topY);
-    ctx.quadraticCurveTo(gcx - gw * 0.58, topY + g.height * 0.55, gcx - rootHW, baseY);
-    ctx.lineTo(gcx + rootHW, baseY);
-    ctx.quadraticCurveTo(gcx + gw * 0.58, topY + g.height * 0.55, gcx, topY);
+    ctx.moveTo(gcx - rootHW, baseY);
+    ctx.quadraticCurveTo(gcx - gw * 0.55, topY + g.height * 0.45, gcx - tipHW, arcCY);
+    ctx.arc(gcx, arcCY, tipHW, Math.PI, 0, true); // 上方に膨らむ半円
+    ctx.quadraticCurveTo(gcx + gw * 0.55, topY + g.height * 0.45, gcx + rootHW, baseY);
     ctx.closePath();
     ctx.fill();
 
-    // 先端グロー
+    // 先端グロー（突起なし・shadowBlurのみ）
     ctx.shadowColor = '#FFE000';
-    ctx.shadowBlur  = 24;
-    ctx.fillStyle   = 'rgba(255,255,180,0.95)';
+    ctx.shadowBlur  = 22;
+    ctx.strokeStyle = 'rgba(255,240,150,0.45)';
+    ctx.lineWidth   = 3;
     ctx.beginPath();
-    ctx.arc(gcx, topY + 3, Math.max(5, gw * 0.14 * ratio), 0, Math.PI * 2);
-    ctx.fill();
+    ctx.moveTo(gcx - rootHW, baseY);
+    ctx.quadraticCurveTo(gcx - gw * 0.55, topY + g.height * 0.45, gcx - tipHW, arcCY);
+    ctx.arc(gcx, arcCY, tipHW, Math.PI, 0, true);
+    ctx.quadraticCurveTo(gcx + gw * 0.55, topY + g.height * 0.45, gcx + rootHW, baseY);
+    ctx.stroke();
     ctx.shadowBlur = 0;
   }
 
