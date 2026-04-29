@@ -1128,18 +1128,20 @@ function drawLava() {
 
   // ── グループゲイザー ──
   for (const g of LAVA_GROUPS) {
-    // パーティクルは phase に関わらず描画
+    // パーティクル（大きめ光る玉：phase に関わらず描画）
     for (const p of g.particles) {
       if (p.life <= 0) continue;
-      const alpha = Math.min(p.life / p.maxLife * 1.5, 1);
+      const alpha = Math.min(p.life / p.maxLife * 1.8, 1);
       ctx.globalAlpha = alpha;
-      const pg = ctx.createRadialGradient(p.x - cameraX, p.y, 0, p.x - cameraX, p.y, p.r);
-      pg.addColorStop(0,   '#FFE000');
-      pg.addColorStop(0.5, '#FF5000');
-      pg.addColorStop(1,   'rgba(200,0,0,0)');
+      const px = p.x - cameraX;
+      const pg = ctx.createRadialGradient(px, p.y, 0, px, p.y, p.r);
+      pg.addColorStop(0,    '#FFFFFF');
+      pg.addColorStop(0.25, '#FFEE00');
+      pg.addColorStop(0.6,  '#FF8000');
+      pg.addColorStop(1,    'rgba(200,40,0,0)');
       ctx.fillStyle = pg;
       ctx.beginPath();
-      ctx.arc(p.x - cameraX, p.y, p.r, 0, Math.PI * 2);
+      ctx.arc(px, p.y, p.r, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.globalAlpha = 1;
