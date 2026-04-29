@@ -1162,7 +1162,7 @@ function drawLava() {
       ctx.beginPath();
       ctx.moveTo(gcx - colHW, baseY);
       ctx.lineTo(gcx - colHW, topY);
-      ctx.arc(gcx, topY, colHW, Math.PI, 0, true);
+      ctx.arc(gcx, topY, colHW, Math.PI, 0, false);
       ctx.lineTo(gcx + colHW, baseY);
       ctx.closePath();
     }
