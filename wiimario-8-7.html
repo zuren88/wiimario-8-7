@@ -1144,32 +1144,44 @@ function drawLava() {
     const baseY = (g.row + 1) * T;
     const topY  = baseY - g.height;
     const gcx   = gx + gw / 2;
-    const ratio = Math.min(g.height / g.maxHeight, 1);
     if (gx < -gw * 2 || gx > LW + gw * 2) continue;
 
-    // 本体グラデーション（半円頂点=白黄 → 根元=深赤）
-    const sg = ctx.createLinearGradient(0, topY - T, 0, baseY);
-    sg.addColorStop(0.00, 'rgba(255,255,200,1)');
-    sg.addColorStop(0.12, '#FFD000');
-    sg.addColorStop(0.35, '#FF5500');
-    sg.addColorStop(0.65, '#DD1800');
-    sg.addColorStop(1.00, '#990000');
-    ctx.fillStyle = sg;
+    const colHW = gw * 0.44; // 柱半幅（グループ全幅の約88%）
 
-    // 幅広シルエット（根元=全幅・最上部は直径2タイルの半円キャップ）
-    const rootHW = gw * 0.46;
-    const tipHW  = T;  // 半径 = 1タイル → 直径2タイル
-    // 左辺→半円の左端(gcx-tipHW, topY)→上方半円→半円右端(gcx+tipHW, topY)→右辺
-    ctx.shadowColor = '#FFE000';
-    ctx.shadowBlur  = 22;
-    ctx.beginPath();
-    ctx.moveTo(gcx - rootHW, baseY);
-    ctx.quadraticCurveTo(gcx - gw * 0.55, topY + g.height * 0.45, gcx - tipHW, topY);
-    ctx.arc(gcx, topY, tipHW, Math.PI, 0, true); // center=(gcx,topY), r=T, 上方に膨らむ
-    ctx.quadraticCurveTo(gcx + gw * 0.55, topY + g.height * 0.45, gcx + rootHW, baseY);
-    ctx.closePath();
-    ctx.fill();
+    // シルエット：ほぼ直角な柱＋柱幅と同じ半径の半円ドーム
+    // moveTo→左辺(ごく微妙な外膨れ)→ドーム(上方)→右辺→底辺
+    function gPath() {
+      ctx.beginPath();
+      ctx.moveTo(gcx - colHW, baseY);
+      ctx.quadraticCurveTo(gcx - colHW * 1.07, topY + g.height * 0.5, gcx - colHW, topY);
+      ctx.arc(gcx, topY, colHW, Math.PI, 0, true);
+      ctx.quadraticCurveTo(gcx + colHW * 1.07, topY + g.height * 0.5, gcx + colHW, baseY);
+      ctx.closePath();
+    }
+
+    // ── 本体（白→黄→橙→赤）──
+    const sg = ctx.createLinearGradient(0, topY - colHW, 0, baseY);
+    sg.addColorStop(0.00, '#FFFFFF');
+    sg.addColorStop(0.04, '#FFFFA0');
+    sg.addColorStop(0.14, '#FFD000');
+    sg.addColorStop(0.38, '#FF7000');
+    sg.addColorStop(0.62, '#FF2200');
+    sg.addColorStop(0.85, '#CC1000');
+    sg.addColorStop(1.00, '#880000');
+    ctx.shadowColor = '#FF9000';
+    ctx.shadowBlur  = 30;
+    ctx.fillStyle = sg;
+    gPath(); ctx.fill();
     ctx.shadowBlur = 0;
+
+    // ── 中央コアハイライト（白黄の半透明楕円オーバーレイ）──
+    const coreG = ctx.createRadialGradient(gcx, topY + g.height * 0.25, 0,
+                                            gcx, topY + g.height * 0.25, colHW * 1.4);
+    coreG.addColorStop(0,   'rgba(255,255,220,0.52)');
+    coreG.addColorStop(0.45,'rgba(255,200,60,0.20)');
+    coreG.addColorStop(1,   'rgba(255,80,0,0)');
+    ctx.fillStyle = coreG;
+    gPath(); ctx.fill();
   }
 
   ctx.restore();
