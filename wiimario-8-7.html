@@ -1156,29 +1156,19 @@ function drawLava() {
     sg.addColorStop(1.00, '#990000');
     ctx.fillStyle = sg;
 
-    // 幅広シルエット（根元=全幅・先端は約2タイル幅の丸みキャップ）
+    // 幅広シルエット（根元=全幅・最上部は直径2タイルの半円キャップ）
     const rootHW = gw * 0.46;
-    const tipHW  = Math.min(T, rootHW * 0.8); // 先端半幅（最大1タイル）
-    const arcCY  = topY + tipHW;               // 丸みの中心Y
+    const tipHW  = T;  // 半径 = 1タイル → 直径2タイル
+    // 左辺→半円の左端(gcx-tipHW, topY)→上方半円→半円右端(gcx+tipHW, topY)→右辺
+    ctx.shadowColor = '#FFE000';
+    ctx.shadowBlur  = 22;
     ctx.beginPath();
     ctx.moveTo(gcx - rootHW, baseY);
-    ctx.quadraticCurveTo(gcx - gw * 0.55, topY + g.height * 0.45, gcx - tipHW, arcCY);
-    ctx.arc(gcx, arcCY, tipHW, Math.PI, 0, true); // 上方に膨らむ半円
+    ctx.quadraticCurveTo(gcx - gw * 0.55, topY + g.height * 0.45, gcx - tipHW, topY);
+    ctx.arc(gcx, topY, tipHW, Math.PI, 0, true); // center=(gcx,topY), r=T, 上方に膨らむ
     ctx.quadraticCurveTo(gcx + gw * 0.55, topY + g.height * 0.45, gcx + rootHW, baseY);
     ctx.closePath();
     ctx.fill();
-
-    // 先端グロー（突起なし・shadowBlurのみ）
-    ctx.shadowColor = '#FFE000';
-    ctx.shadowBlur  = 22;
-    ctx.strokeStyle = 'rgba(255,240,150,0.45)';
-    ctx.lineWidth   = 3;
-    ctx.beginPath();
-    ctx.moveTo(gcx - rootHW, baseY);
-    ctx.quadraticCurveTo(gcx - gw * 0.55, topY + g.height * 0.45, gcx - tipHW, arcCY);
-    ctx.arc(gcx, arcCY, tipHW, Math.PI, 0, true);
-    ctx.quadraticCurveTo(gcx + gw * 0.55, topY + g.height * 0.45, gcx + rootHW, baseY);
-    ctx.stroke();
     ctx.shadowBlur = 0;
   }
 
