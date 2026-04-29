@@ -1064,8 +1064,9 @@ function drawLava() {
     ctx.shadowBlur = 0;
   }
 
-  // ── 吹き出し ──
+  // ── 吹き出し（グループ未所属の単体セルのみ）──
   for (const s of LAVA_SPLASHES) {
+    if (s.inGroup) continue;
     if (s.phase === 0 || s.height < 2) continue;
     const sx    = s.col * T - cameraX;
     const baseY = (s.row + 1) * T;          // マーカー行の下端 = 溶岩面
