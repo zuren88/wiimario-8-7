@@ -995,10 +995,25 @@ function checkLavaCollision() {
     }
   }
   for (const s of LAVA_SPLASHES) {
-    if (s.phase === 0 || s.height < 4) continue;
-    const baseY = (s.row + 1) * TILE_SIZE; // 行の下端 = 溶岩面
+    if (s.inGroup || s.phase === 0 || s.height < 4) continue;
+    const baseY = (s.row + 1) * TILE_SIZE;
     if (ml < (s.col + 1) * TILE_SIZE && mr > s.col * TILE_SIZE &&
         mario.y + mario.h > baseY - s.height && mario.y < baseY) {
+      gameState = 'gameover'; return;
+    }
+  }
+  for (const g of LAVA_GROUPS) {
+    // パーティクル接触判定
+    for (const p of g.particles) {
+      if (p.life <= 0) continue;
+      if (ml < p.x + p.r && mr > p.x - p.r && mario.y < p.y + p.r && mb > p.y - p.r) {
+        gameState = 'gameover'; return;
+      }
+    }
+    if (g.phase === 0 || g.height < 4) continue;
+    const baseY = (g.row + 1) * TILE_SIZE;
+    if (ml < (g.colEnd + 1) * TILE_SIZE && mr > g.colStart * TILE_SIZE &&
+        mb > baseY - g.height && mario.y < baseY) {
       gameState = 'gameover'; return;
     }
   }
