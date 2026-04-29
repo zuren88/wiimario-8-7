@@ -925,6 +925,7 @@ function buildLavaGroups() {
 function updateLava(dt) {
   lavaTime += dt;
   for (const s of LAVA_SPLASHES) {
+    if (s.inGroup) continue; // グループに委ねる
     if (s.phase === 0) {
       s.timer -= dt;
       if (s.timer <= 0) {
@@ -939,6 +940,48 @@ function updateLava(dt) {
     } else {
       s.height -= s.speed * dt;
       if (s.height <= 0) { s.height = 0; s.phase = 0; s.timer = 2 + Math.random() * 4; }
+    }
+  }
+  // ── グループゲイザー更新 ──
+  for (const g of LAVA_GROUPS) {
+    if (g.phase === 0) {
+      g.timer -= dt;
+      if (g.timer <= 0) {
+        g.phase = 1;
+        g.maxHeight = TILE_SIZE * (3 + Math.random() * 5);
+        g.speed     = g.maxHeight / 0.45;
+        g.height    = 0;
+        // パーティクル生成（噴出時）
+        const gw    = (g.colEnd - g.colStart + 1) * TILE_SIZE;
+        const baseY = (g.row + 1) * TILE_SIZE;
+        const count = 3 + Math.floor(Math.random() * 4);
+        for (let k = 0; k < count; k++) {
+          const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 0.65;
+          const spd   = 250 + Math.random() * 350;
+          const life  = 0.55 + Math.random() * 0.5;
+          g.particles.push({
+            x: g.colStart * TILE_SIZE + Math.random() * gw,
+            y: baseY,
+            vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd,
+            r: 5 + Math.random() * 5, life, maxLife: life
+          });
+        }
+      }
+    } else if (g.phase === 1) {
+      g.height += g.speed * dt;
+      if (g.height >= g.maxHeight) { g.height = g.maxHeight; g.phase = 2; }
+    } else {
+      g.height -= g.speed * dt;
+      if (g.height <= 0) { g.height = 0; g.phase = 0; g.timer = 2 + Math.random() * 4; }
+    }
+    // パーティクル物理
+    for (let k = g.particles.length - 1; k >= 0; k--) {
+      const p = g.particles[k];
+      p.vy  += GRAVITY * dt;
+      p.x   += p.vx * dt;
+      p.y   += p.vy * dt;
+      p.life -= dt;
+      if (p.life <= 0) g.particles.splice(k, 1);
     }
   }
 }
