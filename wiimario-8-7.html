@@ -898,7 +898,28 @@ function addLavaZone(row, colStart, colEnd) {
   LAVA_ZONES.push({ row, colStart, colEnd });
 }
 function addLavaSplash(col, row) {
-  LAVA_SPLASHES.push({ col, row, timer: Math.random() * 3, phase: 0, height: 0, maxHeight: 0, speed: 0 });
+  LAVA_SPLASHES.push({ col, row, timer: Math.random() * 3, phase: 0, height: 0, maxHeight: 0, speed: 0, inGroup: false });
+}
+
+function buildLavaGroups() {
+  LAVA_GROUPS.length = 0;
+  const sorted = [...LAVA_SPLASHES].sort((a, b) =>
+    a.row !== b.row ? a.row - b.row : a.col - b.col);
+  let i = 0;
+  while (i < sorted.length) {
+    const row = sorted[i].row;
+    const colStart = sorted[i].col;
+    let colEnd = colStart;
+    sorted[i].inGroup = true;
+    while (i + 1 < sorted.length && sorted[i+1].row === row && sorted[i+1].col === colEnd + 1) {
+      i++;
+      sorted[i].inGroup = true;
+      colEnd = sorted[i].col;
+    }
+    LAVA_GROUPS.push({ row, colStart, colEnd, timer: Math.random() * 3,
+      phase: 0, height: 0, maxHeight: 0, speed: 0, particles: [] });
+    i++;
+  }
 }
 
 function updateLava(dt) {
