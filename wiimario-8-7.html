@@ -952,19 +952,25 @@ function updateLava(dt) {
         g.maxHeight = TILE_SIZE * 5;
         g.speed     = g.maxHeight / 0.45;
         g.height    = 0;
-        // パーティクル生成（噴出時）
+        // パーティクル生成（噴出時：ドーム周辺に大きめ玉を散らす）
         const gw    = (g.colEnd - g.colStart + 1) * TILE_SIZE;
         const baseY = (g.row + 1) * TILE_SIZE;
-        const count = 3 + Math.floor(Math.random() * 4);
+        const topY  = baseY - g.maxHeight;
+        const gcx   = g.colStart * TILE_SIZE + gw / 2;
+        const colHW = gw * 0.44;
+        const count = 5 + Math.floor(Math.random() * 4);
         for (let k = 0; k < count; k++) {
-          const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 0.65;
-          const spd   = 250 + Math.random() * 350;
-          const life  = 0.55 + Math.random() * 0.5;
+          // ドーム周囲のランダム角度から射出
+          const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.1;
+          const spd   = 180 + Math.random() * 220;
+          const life  = 0.7 + Math.random() * 0.6;
+          // 出発点：ドーム周辺に散らす
+          const ox = gcx + (Math.random() - 0.5) * colHW * 1.6;
+          const oy = topY + (Math.random()) * colHW * 0.8;
           g.particles.push({
-            x: g.colStart * TILE_SIZE + Math.random() * gw,
-            y: baseY,
+            x: ox, y: oy,
             vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd,
-            r: 5 + Math.random() * 5, life, maxLife: life
+            r: 10 + Math.random() * 14, life, maxLife: life
           });
         }
       }
