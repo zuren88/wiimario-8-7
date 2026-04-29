@@ -1147,8 +1147,8 @@ function drawLava() {
     const ratio = Math.min(g.height / g.maxHeight, 1);
     if (gx < -gw * 2 || gx > LW + gw * 2) continue;
 
-    // 本体グラデーション（先端=白黄 → 根元=深赤）
-    const sg = ctx.createLinearGradient(0, topY, 0, baseY);
+    // 本体グラデーション（半円頂点=白黄 → 根元=深赤）
+    const sg = ctx.createLinearGradient(0, topY - T, 0, baseY);
     sg.addColorStop(0.00, 'rgba(255,255,200,1)');
     sg.addColorStop(0.12, '#FFD000');
     sg.addColorStop(0.35, '#FF5500');
