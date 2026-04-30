@@ -1203,8 +1203,7 @@ function _snakeSegs(sn) {
     const pos = _snakePosAt(sn.path, d, sn.pathLen);
     const pA  = _snakePosAt(sn.path, d - 30, sn.pathLen);
     const pB  = _snakePosAt(sn.path, d + 30, sn.pathLen);
-    const ang = Math.max(-Math.PI / 9, Math.min(Math.PI / 9,
-                  Math.atan2(pB[1] - pA[1], pB[0] - pA[0])));
+    const ang = Math.atan2(pB[1] - pA[1], pB[0] - pA[0]);
     segs.push([pos[0], pos[1], ang]);
   }
   return segs; // segs[i] = [x, y, angle]
