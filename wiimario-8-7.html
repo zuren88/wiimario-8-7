@@ -1229,9 +1229,17 @@ function initSnakes() {
 
 // 毎フレーム：ヘビ進行＋乗っているマリオを搬送
 function updateSnakes(dt) {
+  const SLOPE_TH = 8 * Math.PI / 180; // 8度未満は速度変化なし
   for (const sn of snakes) {
     const prevSegs = sn.segs;
-    sn.headDist = (sn.headDist + SNAKE_SPEED * dt) % sn.pathLen;
+    // 傾斜速度：前方40px先との高低差で倍率計算
+    const pA = _snakePosAt(sn.path, sn.headDist, sn.pathLen);
+    const pB = _snakePosAt(sn.path, sn.headDist + 40, sn.pathLen);
+    const slope = Math.atan2(pB[1] - pA[1], pB[0] - pA[0]);
+    const spd = Math.abs(slope) > SLOPE_TH
+      ? SNAKE_SPEED * Math.max(0.4, Math.min(1.8, 1.0 + Math.sin(slope) * 1.0))
+      : SNAKE_SPEED;
+    sn.headDist = (sn.headDist + spd * dt) % sn.pathLen;
     const curSegs = _snakeSegs(sn);
     sn.segs = curSegs;
 
