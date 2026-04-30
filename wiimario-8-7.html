@@ -99,8 +99,8 @@ const TILE_UNIT    = 30;      // 1高さ単位 = しゃがみマリオの高さ
 const STAGE_HEIGHT = 1050;    // 1050÷50=21行
 const MAP_COLS     = STAGE_WIDTH  / TILE_SIZE; // 432
 const MAP_ROWS     = STAGE_HEIGHT / TILE_SIZE; // 21
-let GOAL_X  = -1;  // -1=未設定。map-editor の🏁スニペットで「GOAL_X = 〇〇;」を貼り付けて設定
-let HOUSE_X = -1;  // 同上
+GOAL_X  = 58950;   // ゴールポール中心 X（列1178）
+HOUSE_X = 59900;  // ゴール後の家 左端 X（列1198）
 
 // マリオ寸法
 const MARIO_W        = TILE_SIZE;                    // 50px（1タイル）
@@ -157,6 +157,10 @@ function ovrLine(c, r, len, id) { for (let i=0;i<len;i++) ovrT(c+i,r,id); }
 function mRect(c, r, w, h, id) { for(let dr=0;dr<h;dr++) hLine(c,r+dr,w,id); }
 // 土管はMAPに置かず別配列で管理（1枚画像を拡大描画）
 // { x, y, w, h, flip } flip=true で天井型（上下反転）
+// ── ワープ設定 ──
+const WARP_PIPES = [
+  { inCol: 474, outCol: 559 }, // 入口 x=23700px → 出口 x=27950px
+];
 const PIPES = [];
 function gPipe(c, r, tileH) {
   const pw = TILE_SIZE * 3, ph = TILE_SIZE * tileH;  // 横3タイル
@@ -290,6 +294,115 @@ const SNAKE_PATH_2 = [
   [22525, 725],  // pt45
   [22625, 925],  // pt46
 ];
+const SNAKE_PATH_3 = [
+  [29375, 475],  // pt1
+  [30975, 475],  // pt2
+  [31125, 575],  // pt3
+  [31325, 725],  // pt4
+  [31625, 825],  // pt5
+  [32325, 825],  // pt6
+  [32375, 825],  // pt7
+  [32575, 625],  // pt8
+  [32875, 425],  // pt9
+  [33225, 425],  // pt10
+  [33625, 575],  // pt11
+  [33875, 575],  // pt12
+  [34225, 475],  // pt13
+  [34475, 525],  // pt14
+  [35475, 775],  // pt15
+  [35675, 775],  // pt16
+  [35825, 875],  // pt17
+  [36125, 875],  // pt18
+  [36525, 875],  // pt19
+  [36625, 725],  // pt20
+  [36775, 575],  // pt21
+  [37275, 575],  // pt22
+  [37475, 775],  // pt23
+  [37675, 775],  // pt24
+  [37875, 625],  // pt25
+  [38075, 625],  // pt26
+  [38275, 775],  // pt27
+  [38525, 775],  // pt28
+  [38725, 475],  // pt29
+  [38975, 475],  // pt30
+  [39075, 625],  // pt31
+  [39375, 625],  // pt32
+  [39675, 475],  // pt33
+  [39875, 475],  // pt34
+  [40025, 625],  // pt35
+  [40225, 625],  // pt36
+  [40475, 275],  // pt37
+  [40725, 275],  // pt38
+  [40875, 425],  // pt39
+  [41325, 425],  // pt40
+  [41425, 775],  // pt41
+  [41775, 775],  // pt42
+  [41925, 425],  // pt43
+  [42625, 425],  // pt44
+  [42775, 525],  // pt45
+  [43575, 525],  // pt46
+  [43725, 775],  // pt47
+  [43925, 775],  // pt48
+  [44225, 475],  // pt49
+  [45275, 475],  // pt50
+  [45425, 825],  // pt51
+  [45725, 825],  // pt52
+  [46375, 125],  // pt53
+  [46625, 125],  // pt54
+  [47125, 125],  // pt55
+  [47175, 225],  // pt56
+  [47375, 225],  // pt57
+  [47475, 525],  // pt58
+  [47625, 525],  // pt59
+  [47725, 725],  // pt60
+  [48125, 725],  // pt61
+  [48575, 825],  // pt62
+  [48775, 825],  // pt63
+  [49125, 1025],  // pt64
+];
+const SNAKE_PATH_4 = [
+  [50725, 525],  // pt1
+  [51125, 325],  // pt2
+  [51175, 325],  // pt3
+  [51975, 325],  // pt4
+  [52225, 525],  // pt5
+  [52275, 525],  // pt6
+  [54175, 525],  // pt7
+  [54575, 575],  // pt8
+  [54975, 375],  // pt9
+  [55325, 375],  // pt10
+  [55625, 575],  // pt11
+  [56075, 875],  // pt12
+  [56375, 875],  // pt13
+  [56575, 625],  // pt14
+  [57075, 625],  // pt15
+  [57275, 875],  // pt16
+  [57575, 875],  // pt17
+  [57775, 625],  // pt18
+  [58075, 625],  // pt19
+  [58375, 875],  // pt20
+  [58725, 1025],  // pt21
+];
+const SNAKE_PATH_5 = [
+  [52525, 25],  // pt1
+  [52725, 325],  // pt2
+  [54175, 325],  // pt3
+  [54575, 325],  // pt4
+  [54975, 775],  // pt5
+  [55325, 775],  // pt6
+  [55625, 525],  // pt7
+  [56075, 375],  // pt8
+  [56375, 375],  // pt9
+  [56575, 675],  // pt10
+  [56625, 875],  // pt11
+  [57075, 875],  // pt12
+  [57275, 625],  // pt13
+  [57575, 625],  // pt14
+  [57775, 875],  // pt15
+  [58075, 875],  // pt16
+  [58375, 625],  // pt17
+  [58625, 1025],  // pt18
+];
 // --- ここまで ---
 
 // ============================================================
@@ -387,22 +500,33 @@ function spawnFireball(type, sx, sy, vx, vy) {
   LIFTS.length = 0;
   ENEMIES.length = 0;
   STAR_COINS.length = 0;
-  LAVA_ZONES.length    = 0;
-  LAVA_SPLASHES.length = 0;
-  LAVA_GROUPS.length   = 0;
-  // ↓ addLavaZone(row, colStart, colEnd); / addLavaSplash(col, row); をここに貼り付け
 
   // ── 敵（addFireBros）──
+  addStarCoin(697,4);
+  addStarCoin(1076,7);
+  addRedRing(727,9);
   addStarCoin(434,13);
+  
 
   // ── タイル（setT/hLine）──
   hLine(482,0,3,11);
+  setT(550,0,25);
+  hLine(956,0,40,26);
   hLine(482,1,3,11);
+  setT(550,1,25);
+  setT(857,1,28);
+  hLine(957,1,39,26);
+  hLine(996,1,6,32);
+  hLine(1174,1,2,8);
   hLine(47,2,2,27);
   hLine(214,2,36,25);
   setT(371,2,8);
   setT(373,2,8);
   hLine(482,2,3,11);
+  setT(550,2,25);
+  hLine(958,2,36,26);
+  hLine(1005,2,3,25);
+  setT(1176,2,8);
   hLine(16,3,2,27);
   setT(214,3,25);
   hLine(215,3,34,26);
@@ -411,12 +535,29 @@ function spawnFireball(type, sx, sy, vx, vy) {
   setT(369,3,8);
   setT(375,3,8);
   hLine(482,3,3,11);
+  setT(550,3,25);
+  setT(609,3,27);
+  setT(872,3,28);
+  hLine(959,3,34,26);
+  setT(1005,3,25);
+  setT(1006,3,26);
+  setT(1007,3,25);
+  setT(1177,3,8);
   hLine(105,4,2,8);
   hLine(125,4,3,8);
   setT(214,4,25);
   hLine(215,4,34,26);
   setT(249,4,25);
   hLine(482,4,3,11);
+  setT(550,4,25);
+  setT(801,4,28);
+  setT(804,4,28);
+  setT(839,4,28);
+  setT(843,4,28);
+  hLine(961,4,31,26);
+  setT(1005,4,25);
+  setT(1006,4,26);
+  setT(1007,4,25);
   setT(104,5,8);
   setT(107,5,8);
   setT(124,5,8);
@@ -427,6 +568,11 @@ function spawnFireball(type, sx, sy, vx, vy) {
   hLine(215,5,34,26);
   setT(249,5,25);
   hLine(482,5,3,11);
+  setT(550,5,25);
+  hLine(962,5,28,26);
+  setT(1005,5,25);
+  setT(1006,5,26);
+  setT(1007,5,25);
   setT(103,6,8);
   setT(108,6,8);
   setT(123,6,8);
@@ -437,6 +583,13 @@ function spawnFireball(type, sx, sy, vx, vy) {
   setT(249,6,25);
   setT(300,6,8);
   hLine(482,6,3,11);
+  setT(550,6,25);
+  hLine(551,6,8,21);
+  hLine(965,6,23,26);
+  hLine(999,6,3,32);
+  hLine(1002,6,4,25);
+  setT(1006,6,26);
+  setT(1007,6,25);
   hLine(182,7,3,8);
   setT(198,7,8);
   setT(214,7,25);
@@ -445,6 +598,14 @@ function spawnFireball(type, sx, sy, vx, vy) {
   hLine(301,7,2,8);
   hLine(318,7,4,8);
   hLine(482,7,3,11);
+  setT(550,7,25);
+  hLine(551,7,8,21);
+  setT(766,7,28);
+  setT(769,7,28);
+  hLine(973,7,14,26);
+  setT(1002,7,25);
+  hLine(1003,7,4,26);
+  setT(1007,7,25);
   hLine(161,8,3,8);
   setT(181,8,8);
   setT(185,8,8);
@@ -457,6 +618,11 @@ function spawnFireball(type, sx, sy, vx, vy) {
   setT(322,8,8);
   hLine(451,8,3,8);
   hLine(482,8,3,11);
+  setT(550,8,25);
+  hLine(551,8,8,21);
+  setT(1002,8,25);
+  hLine(1003,8,4,26);
+  setT(1007,8,25);
   hLine(0,9,27,25);
   setT(160,9,8);
   setT(164,9,8);
@@ -465,18 +631,38 @@ function spawnFireball(type, sx, sy, vx, vy) {
   setT(249,9,25);
   setT(454,9,8);
   hLine(482,9,3,11);
+  hLine(550,9,17,25);
+  hLine(576,9,9,25);
+  setT(1002,9,25);
+  hLine(1003,9,4,26);
+  hLine(1007,9,6,25);
   hLine(0,10,27,26);
   setT(214,10,25);
   hLine(215,10,34,26);
   setT(249,10,25);
   setT(455,10,8);
   hLine(482,10,3,11);
+  hLine(550,10,2,25);
+  hLine(552,10,15,26);
+  hLine(567,10,9,25);
+  hLine(576,10,8,26);
+  setT(584,10,25);
+  hLine(996,10,6,32);
+  setT(1002,10,25);
+  hLine(1003,10,9,26);
+  setT(1012,10,25);
   hLine(0,11,27,26);
   hLine(209,11,5,25);
   hLine(214,11,35,26);
   setT(249,11,25);
   setT(455,11,8);
   hLine(482,11,3,11);
+  hLine(550,11,2,25);
+  hLine(552,11,32,26);
+  setT(584,11,25);
+  setT(1002,11,25);
+  hLine(1003,11,9,26);
+  setT(1012,11,25);
   hLine(0,12,26,26);
   hLine(197,12,3,32);
   hLine(200,12,9,25);
@@ -484,41 +670,85 @@ function spawnFireball(type, sx, sy, vx, vy) {
   hLine(247,12,3,25);
   hLine(475,12,7,22);
   hLine(482,12,3,2);
+  hLine(550,12,2,25);
+  hLine(552,12,31,26);
+  hLine(583,12,2,25);
+  setT(1002,12,25);
+  hLine(1003,12,8,26);
+  hLine(1011,12,2,25);
   hLine(0,13,23,26);
   hLine(200,13,45,26);
   hLine(245,13,3,25);
   hLine(475,13,7,22);
   hLine(482,13,3,2);
+  hLine(550,13,2,25);
+  hLine(552,13,29,26);
+  hLine(581,13,3,25);
+  setT(1002,13,25);
+  hLine(1003,13,7,26);
+  setT(1010,13,25);
   hLine(0,14,22,26);
   hLine(200,14,43,26);
   hLine(243,14,3,25);
   hLine(475,14,7,22);
   hLine(482,14,3,2);
+  hLine(550,14,2,25);
+  hLine(552,14,27,26);
+  hLine(579,14,3,25);
+  setT(1002,14,25);
+  hLine(1003,14,6,26);
+  setT(1009,14,25);
   hLine(0,15,21,26);
   hLine(203,15,38,26);
   hLine(241,15,2,25);
   hLine(470,15,14,25);
+  hLine(550,15,2,25);
+  hLine(552,15,24,26);
+  hLine(576,15,4,25);
+  hLine(983,15,6,32);
+  hLine(989,15,14,25);
+  hLine(1003,15,5,26);
+  setT(1008,15,25);
   hLine(3,16,16,26);
   hLine(204,16,36,26);
   hLine(240,16,2,25);
   hLine(453,16,6,32);
   hLine(459,16,11,25);
   hLine(470,16,15,26);
+  hLine(550,16,2,25);
+  hLine(552,16,22,26);
+  hLine(574,16,2,25);
+  setT(989,16,25);
+  hLine(990,16,18,26);
+  setT(1008,16,25);
   hLine(4,17,14,26);
   hLine(204,17,35,26);
   setT(239,17,25);
   setT(459,17,25);
   hLine(460,17,25,26);
+  hLine(550,17,2,25);
+  hLine(552,17,21,26);
+  hLine(573,17,2,25);
+  hLine(989,17,20,25);
   hLine(6,18,11,26);
   hLine(204,18,34,26);
   setT(238,18,25);
   setT(459,18,25);
   hLine(460,18,25,26);
+  hLine(550,18,2,25);
+  hLine(552,18,21,26);
+  setT(573,18,25);
   hLine(218,19,19,26);
   hLine(237,19,2,25);
+  hLine(550,19,2,25);
+  hLine(552,19,19,26);
+  hLine(571,19,2,25);
   hLine(218,20,19,26);
   setT(237,20,25);
-// ── 溶岩設定（buildMap 内に貼り付け）──
+  hLine(550,20,22,25);
+  hLine(1176,20,33,25);
+
+  // ── 溶岩設定（buildMap 内に貼り付け）──
 addLavaZone(16, 242, 449);
 addLavaZone(17, 240, 316);
 addLavaZone(17, 318, 321);
@@ -532,10 +762,17 @@ addLavaZone(18, 345, 431);
 addLavaZone(18, 433, 435);
 addLavaZone(18, 437, 451);
 addLavaZone(18, 453, 458);
+addLavaZone(18, 635, 1007);
+addLavaZone(18, 1045, 1165);
 addLavaZone(19, 0, 217);
 addLavaZone(19, 239, 484);
+addLavaZone(19, 634, 1008);
+addLavaZone(19, 1043, 1169);
 addLavaZone(20, 0, 217);
 addLavaZone(20, 238, 484);
+addLavaZone(20, 633, 981);
+addLavaZone(20, 983, 1009);
+addLavaZone(20, 1042, 1170);
 addLavaSplash(336, 15);
 addLavaSplash(337, 15);
 addLavaSplash(338, 15);
@@ -549,6 +786,30 @@ addLavaSplash(376, 15);
 addLavaSplash(379, 15);
 addLavaSplash(380, 15);
 addLavaSplash(381, 15);
+addLavaSplash(663, 17);
+addLavaSplash(664, 17);
+addLavaSplash(665, 17);
+addLavaSplash(688, 17);
+addLavaSplash(689, 17);
+addLavaSplash(690, 17);
+addLavaSplash(693, 17);
+addLavaSplash(694, 17);
+addLavaSplash(695, 17);
+addLavaSplash(1077, 17);
+addLavaSplash(1078, 17);
+addLavaSplash(1079, 17);
+addLavaSplash(1089, 17);
+addLavaSplash(1090, 17);
+addLavaSplash(1091, 17);
+addLavaSplash(1107, 17);
+addLavaSplash(1108, 17);
+addLavaSplash(1109, 17);
+addLavaSplash(1128, 17);
+addLavaSplash(1129, 17);
+addLavaSplash(1130, 17);
+addLavaSplash(1163, 17);
+addLavaSplash(1164, 17);
+addLavaSplash(1165, 17);
 addLavaSplash(0, 18);
 addLavaSplash(1, 18);
 addLavaSplash(2, 18);
@@ -575,9 +836,10 @@ addLavaSplash(164, 18);
 addLavaSplash(181, 18);
 addLavaSplash(182, 18);
 addLavaSplash(183, 18);
+// 土管（右向き）
+// rPipe(551, 6, 8, 3);
 // 土管（左向き）
 // lPipe(475, 12, 7, 3);
-
 
 
 })();
