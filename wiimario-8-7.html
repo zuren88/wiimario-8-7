@@ -1036,6 +1036,107 @@ function checkLavaCollision() {
   }
 }
 
+// ============================================================
+// ヘビレール描画
+// ============================================================
+function drawSnakeRails() {
+  const paths = [SNAKE_PATH_1, SNAKE_PATH_2, SNAKE_PATH_3, SNAKE_PATH_4, SNAKE_PATH_5];
+  const colors = ['#FF6600', '#FF0088', '#00DD44', '#00CCFF', '#FFDD00'];
+
+  ctx.save();
+  ctx.translate(-cameraX, 0);
+
+  for (let pi = 0; pi < paths.length; pi++) {
+    const pts = paths[pi];
+    if (!pts || pts.length < 2) continue;
+    const col = colors[pi];
+
+    // 枕木（レール線より先に描いて重なりを自然に）
+    ctx.strokeStyle = '#5a3a1a';
+    ctx.lineWidth   = 6;
+    ctx.lineCap     = 'round';
+    const TIE_INTERVAL = 24; // px間隔
+    let acc = 0;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const ax = pts[i][0],   ay = pts[i][1];
+      const bx = pts[i+1][0], by = pts[i+1][1];
+      const segLen = Math.hypot(bx - ax, by - ay);
+      const nx = (by - ay) / segLen; // 法線
+      const ny = (ax - bx) / segLen;
+      let d = (acc === 0) ? 0 : TIE_INTERVAL - (acc % TIE_INTERVAL);
+      if (d >= segLen) { acc += segLen; continue; }
+      for (; d < segLen; d += TIE_INTERVAL) {
+        const t = d / segLen;
+        const cx2 = ax + (bx - ax) * t;
+        const cy2 = ay + (by - ay) * t;
+        ctx.beginPath();
+        ctx.moveTo(cx2 + nx * 9, cy2 + ny * 9);
+        ctx.lineTo(cx2 - nx * 9, cy2 - ny * 9);
+        ctx.stroke();
+      }
+      acc += segLen;
+    }
+
+    // 外郭（黒縁）
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+    ctx.strokeStyle = '#111';
+    ctx.lineWidth   = 22;
+    ctx.lineJoin    = 'round';
+    ctx.lineCap     = 'round';
+    ctx.stroke();
+
+    // 左レール
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+    ctx.strokeStyle = '#888';
+    ctx.lineWidth   = 5;
+    ctx.lineJoin    = 'round';
+    ctx.lineCap     = 'round';
+    ctx.setLineDash([]);
+    // 右レール と左レールを法線オフセットで描く
+    const RAIL_W = 7;
+    for (const sign of [-1, 1]) {
+      ctx.beginPath();
+      for (let i = 0; i < pts.length; i++) {
+        let nx2 = 0, ny2 = 0;
+        if (i < pts.length - 1) {
+          const dx = pts[i+1][0] - pts[i][0];
+          const dy = pts[i+1][1] - pts[i][1];
+          const l = Math.hypot(dx, dy) || 1;
+          nx2 = -dy / l; ny2 = dx / l;
+        } else {
+          const dx = pts[i][0] - pts[i-1][0];
+          const dy = pts[i][1] - pts[i-1][1];
+          const l = Math.hypot(dx, dy) || 1;
+          nx2 = -dy / l; ny2 = dx / l;
+        }
+        const ox = pts[i][0] + nx2 * RAIL_W * sign;
+        const oy = pts[i][1] + ny2 * RAIL_W * sign;
+        i === 0 ? ctx.moveTo(ox, oy) : ctx.lineTo(ox, oy);
+      }
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 4;
+      ctx.stroke();
+    }
+
+    // 始点・終点マーカー
+    for (const [mx, my] of [pts[0], pts[pts.length - 1]]) {
+      ctx.beginPath();
+      ctx.arc(mx, my, 10, 0, Math.PI * 2);
+      ctx.fillStyle = col;
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
+
+  ctx.restore();
+}
+
 function drawLava() {
   if (LAVA_ZONES.length === 0) return;
   const T = TILE_SIZE;
