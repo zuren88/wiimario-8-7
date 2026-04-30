@@ -1037,7 +1037,12 @@ function checkLavaCollision() {
 // ヘビレール描画
 // ============================================================
 function drawSnakeRails() {
-  const paths = [SNAKE_PATH_1, SNAKE_PATH_2, SNAKE_PATH_3, SNAKE_PATH_4, SNAKE_PATH_5];
+  const _p = (n) => (typeof n !== 'undefined' ? n : []);
+  const paths = [_p(typeof SNAKE_PATH_1!=='undefined'&&SNAKE_PATH_1),
+                 _p(typeof SNAKE_PATH_2!=='undefined'&&SNAKE_PATH_2),
+                 _p(typeof SNAKE_PATH_3!=='undefined'&&SNAKE_PATH_3),
+                 _p(typeof SNAKE_PATH_4!=='undefined'&&SNAKE_PATH_4),
+                 _p(typeof SNAKE_PATH_5!=='undefined'&&SNAKE_PATH_5)];
   const colors = ['#FF6600', '#FF0088', '#00DD44', '#00CCFF', '#FFDD00'];
 
   ctx.save();
