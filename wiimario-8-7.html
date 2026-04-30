@@ -2011,6 +2011,7 @@ function update(dt) {
 
   // 位置更新・衝突解決（X→Y順）
   updateLifts(dt);
+  updateSnakes(dt);
 
   mario.x += mario.vx * dt;
   resolveTileX();
@@ -2020,6 +2021,7 @@ function update(dt) {
   mario.y += mario.vy * dt;
   resolveTileY();
   resolveLifts(dt);
+  resolveSnakes();
   collectCoins();
   collectStarCoins();
   collectRedRings();
