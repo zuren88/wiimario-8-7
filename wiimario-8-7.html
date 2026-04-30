@@ -1191,8 +1191,8 @@ function _snakePosAt(path, dist, pathLen) {
 // 全セグメント座標を計算（カクカク＋傾き付き・隙間ゼロ）
 function _snakeSegs(sn) {
   const segs = [];
-  // 頭だけ量子化して全セグが同時スナップ（バラバラずれ防止）
-  const snapD0 = Math.floor(sn.headDist / SNAKE_SNAP) * SNAKE_SNAP;
+  // 量子化廃止：headDistをそのまま使用してスムーズ移動
+  const snapD0 = sn.headDist;
   let offset = 0;
   for (let i = 0; i <= SNAKE_SEG_N; i++) {
     if (i > 0) {
