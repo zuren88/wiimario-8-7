@@ -1318,19 +1318,42 @@ function resolveSnakes() {
 
 // ── ヘビ描画ヘルパー ──
 
-// ang: 傾き角（ラジアン、±20°クランプ済み）
+// ang: 傾き角（ラジアン）
 function _drawSnakeSeg(cx, cy, w, h, ang) {
   const kr = Math.round(h * 0.75);
   ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate(ang);
-  ctx.fillStyle   = '#ffffff';
-  ctx.strokeStyle = '#111111';
+
+  // ボディ（ダークネイビー）
+  ctx.fillStyle   = '#1a2845';
+  ctx.strokeStyle = '#080d1a';
   ctx.lineWidth   = 2;
   ctx.fillRect(-w/2, -h/2, w, h);
   ctx.strokeRect(-w/2, -h/2, w, h);
+
+  // 関節ボール（スチールブルー）
+  ctx.fillStyle   = '#4466aa';
+  ctx.strokeStyle = '#080d1a';
+  ctx.lineWidth   = 2;
   ctx.beginPath(); ctx.arc(-w/2, 0, kr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   ctx.beginPath(); ctx.arc( w/2, 0, kr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+  // 上部スパイン（白い三角歯・2本）
+  ctx.fillStyle   = '#ddeeff';
+  ctx.strokeStyle = '#080d1a';
+  ctx.lineWidth   = 1.5;
+  const nSpines = 2, sW = w * 0.18, sH = h * 0.7;
+  for (let i = 0; i < nSpines; i++) {
+    const sx = -w/2 + w * (i + 0.5) / nSpines;
+    ctx.beginPath();
+    ctx.moveTo(sx - sW/2, -h/2);
+    ctx.lineTo(sx,         -h/2 - sH);
+    ctx.lineTo(sx + sW/2, -h/2);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+  }
+
   ctx.restore();
 }
 
