@@ -2078,11 +2078,8 @@ function update(dt) {
   resolveTileY();
   resolveLifts(dt);
   resolveSnakes();
-  // 慣性の減衰：着地で即消去、空中は徐々に減衰
-  if (mario.snakeInertiaVx !== 0) {
-    if (mario.onGround) mario.snakeInertiaVx = 0;
-    else mario.snakeInertiaVx *= Math.pow(0.92, dt * 60);
-  }
+  // 慣性：着地で即消去（空中は蛇の速度を完全維持→同一地点着地）
+  if (mario.snakeInertiaVx !== 0 && mario.onGround) mario.snakeInertiaVx = 0;
   collectCoins();
   collectStarCoins();
   collectRedRings();
