@@ -1188,17 +1188,21 @@ function _snakePosAt(path, dist, pathLen) {
   return [path[path.length-1][0], path[path.length-1][1]];
 }
 
-// 全セグメント座標を計算（カクカク＋傾き付き）
+// 全セグメント座標を計算（カクカク＋傾き付き・隙間ゼロ）
 function _snakeSegs(sn) {
   const segs = [];
+  // 頭だけ量子化して全セグが同時スナップ（バラバラずれ防止）
+  const snapD0 = Math.floor(sn.headDist / SNAKE_SNAP) * SNAKE_SNAP;
+  let offset = 0;
   for (let i = 0; i <= SNAKE_SEG_N; i++) {
-    const d = sn.headDist - SNAKE_GAP * i;
-    // 距離をfloor量子化 → 後退ゼロのカクカク
-    const snapD = Math.floor(d / SNAKE_SNAP) * SNAKE_SNAP;
-    const pos = _snakePosAt(sn.path, snapD, sn.pathLen);
-    // 傾き：前後30px地点の接線、±20°でクランプ
-    const pA  = _snakePosAt(sn.path, snapD - 30, sn.pathLen);
-    const pB  = _snakePosAt(sn.path, snapD + 30, sn.pathLen);
+    if (i > 0) {
+      // 隙間ゼロ：隣接セグメント幅の平均だけ後退
+      offset += i === 1 ? (SNAKE_HEAD_W + SNAKE_SEG_W) / 2 : SNAKE_SEG_W;
+    }
+    const d   = snapD0 - offset;
+    const pos = _snakePosAt(sn.path, d, sn.pathLen);
+    const pA  = _snakePosAt(sn.path, d - 30, sn.pathLen);
+    const pB  = _snakePosAt(sn.path, d + 30, sn.pathLen);
     const ang = Math.max(-Math.PI / 9, Math.min(Math.PI / 9,
                   Math.atan2(pB[1] - pA[1], pB[0] - pA[0])));
     segs.push([pos[0], pos[1], ang]);
