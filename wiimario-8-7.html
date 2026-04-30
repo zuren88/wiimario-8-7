@@ -301,7 +301,7 @@ const SNAKE_SEG_W  = 55;    // 胴体幅
 const SNAKE_SEG_H  = 24;    // 胴体高さ（平面）
 const SNAKE_HEAD_W = 65;    // 頭幅
 const SNAKE_HEAD_H = 50;    // 頭高さ
-const SNAKE_SNAP   = 25;    // カクカク量子化単位 (px)
+// SNAKE_SNAP 廃止（量子化スナップを削除して滑らかな連続移動に変更）
 // セグメント間隔はSNAKE_HEAD_W/SNAKE_SEG_Wから動的計算（隙間ゼロ保証）
 let snakes = [];
 
