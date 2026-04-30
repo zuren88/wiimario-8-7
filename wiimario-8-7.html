@@ -1359,15 +1359,15 @@ function drawSnakes() {
 
     // 尾→頭の順に描画（頭が最前面になる）
     for (let i = SNAKE_SEG_N; i >= 0; i--) {
-      const [cx, cy] = pts[i];
+      const [cx, cy, ang] = pts[i];
       const sw = i === 0 ? SNAKE_HEAD_W : SNAKE_SEG_W;
       const sh = i === 0 ? SNAKE_HEAD_H : SNAKE_SEG_H;
       // 画面外カリング
       if (cx + sw < cameraX - 10 || cx - sw > cameraX + LW + 10) continue;
       if (i === 0) {
-        _drawSnakeHead(cx, cy, sw, sh, headDir);
+        _drawSnakeHead(cx, cy, sw, sh, headDir, ang);
       } else {
-        _drawSnakeSeg(cx, cy, sw, sh);
+        _drawSnakeSeg(cx, cy, sw, sh, ang);
       }
     }
   }
