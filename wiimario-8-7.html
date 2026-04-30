@@ -1290,6 +1290,8 @@ function resolveSnakes() {
       mario.ridingSnakeSeg = prev;
       return;
     }
+    // ジャンプ離脱：蛇の水平速度を慣性として引き継ぐ
+    if (mario.vy < 0 && sn.riderVx) mario.snakeInertiaVx = sn.riderVx;
   }
 
   // 新規着地検出
