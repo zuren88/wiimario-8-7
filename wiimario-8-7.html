@@ -301,8 +301,8 @@ const SNAKE_SEG_W  = 55;    // 胴体幅
 const SNAKE_SEG_H  = 24;    // 胴体高さ（平面）
 const SNAKE_HEAD_W = 65;    // 頭幅
 const SNAKE_HEAD_H = 50;    // 頭高さ
-const SNAKE_GAP    = 140;   // セグメント中心間の経路距離
 const SNAKE_SNAP   = 25;    // カクカク量子化単位 (px)
+// セグメント間隔はSNAKE_HEAD_W/SNAKE_SEG_Wから動的計算（隙間ゼロ保証）
 let snakes = [];
 
 // ============================================================
