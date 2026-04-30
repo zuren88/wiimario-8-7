@@ -1135,59 +1135,19 @@ function drawSnakeRails() {
   /* eslint-enable no-undef */
   if (pathDefs.length === 0) return;
 
-  const RAIL_COLOR = '#b09090'; // 赤みがかった薄灰色
-  const TIE_COLOR  = '#997878';
-  const RAIL_W     = 6;  // 2本レールの間隔（片側オフセット）
-  const TIE_STEP   = 28;
-
   ctx.save();
-  ctx.globalAlpha = 0.75;
+  ctx.globalAlpha  = 0.75;
   ctx.translate(-cameraX, 0);
-  ctx.lineJoin = 'round';
-  ctx.lineCap  = 'round';
+  ctx.strokeStyle  = '#b09090';
+  ctx.lineWidth    = 3;
+  ctx.lineJoin     = 'round';
+  ctx.lineCap      = 'round';
 
   for (const pts of pathDefs) {
-    // 枕木
-    ctx.strokeStyle = TIE_COLOR;
-    ctx.lineWidth   = 3;
-    let acc = 0;
-    for (let i = 0; i < pts.length - 1; i++) {
-      const ax = pts[i][0],   ay = pts[i][1];
-      const bx = pts[i+1][0], by = pts[i+1][1];
-      const segLen = Math.hypot(bx - ax, by - ay) || 1;
-      const nx = (by - ay) / segLen;
-      const ny = (ax - bx) / segLen;
-      let d = acc === 0 ? 0 : TIE_STEP - (acc % TIE_STEP);
-      for (; d < segLen; d += TIE_STEP) {
-        const t  = d / segLen;
-        const cx2 = ax + (bx - ax) * t;
-        const cy2 = ay + (by - ay) * t;
-        ctx.beginPath();
-        ctx.moveTo(cx2 + nx * (RAIL_W + 2), cy2 + ny * (RAIL_W + 2));
-        ctx.lineTo(cx2 - nx * (RAIL_W + 2), cy2 - ny * (RAIL_W + 2));
-        ctx.stroke();
-      }
-      acc += segLen;
-    }
-
-    // 2本平行レール
-    ctx.strokeStyle = RAIL_COLOR;
-    ctx.lineWidth   = 2.5;
-    for (const sign of [-1, 1]) {
-      ctx.beginPath();
-      for (let i = 0; i < pts.length; i++) {
-        const i1 = Math.min(i, pts.length - 2);
-        const dx = pts[i1+1][0] - pts[i1][0];
-        const dy = pts[i1+1][1] - pts[i1][1];
-        const l  = Math.hypot(dx, dy) || 1;
-        const nx2 = -dy / l * sign * RAIL_W;
-        const ny2 =  dx / l * sign * RAIL_W;
-        const ox = pts[i][0] + nx2;
-        const oy = pts[i][1] + ny2;
-        i === 0 ? ctx.moveTo(ox, oy) : ctx.lineTo(ox, oy);
-      }
-      ctx.stroke();
-    }
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+    ctx.stroke();
   }
 
   ctx.restore();
