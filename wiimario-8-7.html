@@ -650,7 +650,8 @@ const mario = {
   jumpStage:   0,
   chainTimer:  0,
   prevOnGround: false,
-  ridingLift:  null,   // 現在乗っているリフト参照
+  ridingLift:      null,   // 現在乗っているリフト参照
+  ridingSnakeSeg:  null,   // 現在乗っているヘビセグメント {sn, si}
   state:           'small',  // 'small' | 'super' | 'fire'
   fireCooldown:     0,       // ファイアマリオ発射クールダウン(秒)
   invincibleTimer:  0,       // ダメージ後の無敵時間（秒）
