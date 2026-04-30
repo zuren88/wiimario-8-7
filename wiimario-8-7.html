@@ -1284,55 +1284,54 @@ function resolveSnakes() {
 
 // ── ヘビ描画ヘルパー ──
 
-function _drawSnakeSeg(cx, cy, w, h) {
-  const kr = Math.round(h * 0.75); // 骨端ボール半径
-  const lx = cx - w/2, rx = cx + w/2;
-
+// ang: 傾き角（ラジアン、±20°クランプ済み）
+function _drawSnakeSeg(cx, cy, w, h, ang) {
+  const kr = Math.round(h * 0.75);
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(ang);
   ctx.fillStyle   = '#ffffff';
   ctx.strokeStyle = '#111111';
   ctx.lineWidth   = 2;
-
-  // 骨の棒
-  ctx.fillRect(lx, cy - h/2, w, h);
-  ctx.strokeRect(lx, cy - h/2, w, h);
-  // 左ボール
-  ctx.beginPath(); ctx.arc(lx, cy, kr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  // 右ボール
-  ctx.beginPath(); ctx.arc(rx, cy, kr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillRect(-w/2, -h/2, w, h);
+  ctx.strokeRect(-w/2, -h/2, w, h);
+  ctx.beginPath(); ctx.arc(-w/2, 0, kr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc( w/2, 0, kr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.restore();
 }
 
-function _drawSnakeHead(cx, cy, w, h, dir) {
-  // dir: 1=右向き, -1=左向き
-  const bx  = cx - dir * w/2;  // 頭の後端（首側）
-  const fx  = cx + dir * w/2;  // 頭の前端（口側）
-  const lx  = Math.min(bx, fx);
-  const top = cy - h/2;
+// dir: 1=右向き, -1=左向き  ang: 傾き角
+function _drawSnakeHead(cx, cy, w, h, dir, ang) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(ang);
+  if (dir === -1) ctx.scale(-1, 1); // 左向き時は左右反転
 
-  // 頭部矩形（骨白）
+  // 頭部矩形（骨白）：ローカル座標で右向き固定描画
+  const hw = w/2, hh = h/2;
   ctx.fillStyle   = '#ffffff';
   ctx.strokeStyle = '#111111';
   ctx.lineWidth   = 2;
-  ctx.fillRect(lx, top, w, h);
-  ctx.strokeRect(lx, top, w, h);
+  ctx.fillRect(-hw, -hh, w, h);
+  ctx.strokeRect(-hw, -hh, w, h);
 
-  // 目のくぼみ（楕円2つ）
+  // 目のくぼみ（楕円2つ）：後端から w*0.28 / w*0.54 の位置
   ctx.fillStyle = '#2a2a2a';
-  const eyeY  = cy - h * 0.08;
+  const eyeY  = -h * 0.08;
   const eyeRx = w * 0.10, eyeRy = h * 0.26;
-  ctx.beginPath(); ctx.ellipse(bx + dir * w * 0.28, eyeY, eyeRx, eyeRy, 0, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(bx + dir * w * 0.54, eyeY, eyeRx, eyeRy, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(-hw + w * 0.28, eyeY, eyeRx, eyeRy, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(-hw + w * 0.54, eyeY, eyeRx, eyeRy, 0, 0, Math.PI*2); ctx.fill();
 
-  // 歯（前面から突出）
-  const tW = 7, tH = 11, nT = 3;
-  const gap = (h - 6) / (nT + 1);
+  // 歯（右端＝前端から突出）
+  const tW = 5, tH = 9, nT = 3;
+  const gap = (h - 4) / (nT + 1);
   ctx.fillStyle   = '#ffffff';
   ctx.strokeStyle = '#111111';
   ctx.lineWidth   = 1.5;
   for (let t = 0; t < nT; t++) {
-    const ty = top + 3 + gap * (t + 1) - tH / 2;
-    const tx = dir === 1 ? fx : fx - tW;
-    ctx.fillRect(tx, ty, tW, tH);
-    ctx.strokeRect(tx, ty, tW, tH);
+    const ty = -hh + 2 + gap * (t + 1) - tH / 2;
+    ctx.fillRect(hw, ty, tW, tH);
+    ctx.strokeRect(hw, ty, tW, tH);
   }
 
   // 後端ボール（首の骨）
@@ -1340,7 +1339,8 @@ function _drawSnakeHead(cx, cy, w, h, dir) {
   ctx.fillStyle   = '#ffffff';
   ctx.strokeStyle = '#111111';
   ctx.lineWidth   = 2;
-  ctx.beginPath(); ctx.arc(bx, cy, kr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(-hw, 0, kr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.restore();
 }
 
 function drawSnakes() {
