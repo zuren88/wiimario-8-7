@@ -1921,7 +1921,6 @@ function startGoal() {
   mario.crouching      = false;
   mario.h              = MARIO_H;
   mario.dir            = 1;
-  mario.snakeInertiaVx = 0;
   // ポール中心にスナップ
   mario.x = GOAL_X - mario.w / 2;
   // ポール最上段判定（poleTop ≈ floorY() - TILE_UNIT*24 = 850-720 = 130）
