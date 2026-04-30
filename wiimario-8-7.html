@@ -1167,6 +1167,201 @@ function drawSnakeRails() {
   ctx.restore();
 }
 
+// ============================================================
+// ヘビ（蛇）ロジック・描画
+// ============================================================
+
+// dist地点の経路上座標を返す（ループ対応）
+function _snakePosAt(path, dist, pathLen) {
+  dist = ((dist % pathLen) + pathLen) % pathLen;
+  let acc = 0;
+  for (let i = 0; i < path.length - 1; i++) {
+    const dx = path[i+1][0] - path[i][0];
+    const dy = path[i+1][1] - path[i][1];
+    const len = Math.hypot(dx, dy);
+    if (acc + len >= dist) {
+      const t = (dist - acc) / len;
+      return [path[i][0] + dx * t, path[i][1] + dy * t];
+    }
+    acc += len;
+  }
+  return [path[path.length-1][0], path[path.length-1][1]];
+}
+
+// 全セグメント座標を計算（量子化でカクカク演出）
+function _snakeSegs(sn) {
+  const segs = [];
+  for (let i = 0; i <= SNAKE_SEG_N; i++) {
+    const raw = _snakePosAt(sn.path, sn.headDist - SNAKE_GAP * i, sn.pathLen);
+    segs.push([
+      Math.round(raw[0] / SNAKE_SNAP) * SNAKE_SNAP,
+      Math.round(raw[1] / SNAKE_SNAP) * SNAKE_SNAP,
+    ]);
+  }
+  return segs; // segs[0]=頭, segs[1..7]=胴体
+}
+
+// ヘビを初期化（startGame から呼ぶ）
+function initSnakes() {
+  snakes = [];
+  const paths = [];
+  /* eslint-disable no-undef */
+  if (typeof SNAKE_PATH_1 !== 'undefined' && SNAKE_PATH_1.length >= 2) paths.push(SNAKE_PATH_1);
+  if (typeof SNAKE_PATH_2 !== 'undefined' && SNAKE_PATH_2.length >= 2) paths.push(SNAKE_PATH_2);
+  if (typeof SNAKE_PATH_3 !== 'undefined' && SNAKE_PATH_3.length >= 2) paths.push(SNAKE_PATH_3);
+  if (typeof SNAKE_PATH_4 !== 'undefined' && SNAKE_PATH_4.length >= 2) paths.push(SNAKE_PATH_4);
+  if (typeof SNAKE_PATH_5 !== 'undefined' && SNAKE_PATH_5.length >= 2) paths.push(SNAKE_PATH_5);
+  /* eslint-enable no-undef */
+  for (const path of paths) {
+    let pLen = 0;
+    for (let i = 0; i < path.length - 1; i++)
+      pLen += Math.hypot(path[i+1][0]-path[i][0], path[i+1][1]-path[i][1]);
+    const sn = { path, pathLen: pLen, headDist: 0, segs: null };
+    sn.segs = _snakeSegs(sn);
+    snakes.push(sn);
+  }
+}
+
+// 毎フレーム：ヘビ進行＋乗っているマリオを搬送
+function updateSnakes(dt) {
+  for (const sn of snakes) {
+    const prevSegs = sn.segs;
+    sn.headDist = (sn.headDist + SNAKE_SPEED * dt) % sn.pathLen;
+    const curSegs = _snakeSegs(sn);
+    sn.segs = curSegs;
+
+    if (mario.ridingSnakeSeg && mario.ridingSnakeSeg.sn === sn && prevSegs) {
+      const si = mario.ridingSnakeSeg.si;
+      const dx = curSegs[si][0] - prevSegs[si][0];
+      const dy = curSegs[si][1] - prevSegs[si][1];
+      // 経路ループ時のテレポート防止
+      if (Math.abs(dx) < 200 && Math.abs(dy) < 200) {
+        mario.x += dx;
+        mario.y += dy;
+      }
+    }
+  }
+}
+
+// ヘビへの着地判定（resolveTileY / resolveLifts の後に呼ぶ）
+function resolveSnakes() {
+  mario.ridingSnakeSeg = null;
+  for (const sn of snakes) {
+    if (!sn.segs) continue;
+    for (let i = 0; i <= SNAKE_SEG_N; i++) {
+      const [sx, sy] = sn.segs[i];
+      const sw = i === 0 ? SNAKE_HEAD_W : SNAKE_SEG_W;
+      const sh = i === 0 ? SNAKE_HEAD_H : SNAKE_SEG_H;
+      const segTop  = sy - sh / 2;
+      const segLeft = sx - sw / 2 + 4;
+      const segRight = sx + sw / 2 - 4;
+      const mL = mario.x, mR = mario.x + mario.w;
+      const mB = mario.y + mario.h;
+      if (mR <= segLeft || mL >= segRight) continue;
+      if (mB >= segTop - 4 && mB <= segTop + sh * 0.8 && mario.y < segTop + 4) {
+        mario.y          = segTop - mario.h;
+        mario.vy         = 0;
+        mario.onGround   = true;
+        mario.ridingSnakeSeg = { sn, si: i };
+        return;
+      }
+    }
+  }
+}
+
+// ── ヘビ描画ヘルパー ──
+
+function _drawSnakeSeg(cx, cy, w, h) {
+  const kr = Math.round(h * 0.75); // 骨端ボール半径
+  const lx = cx - w/2, rx = cx + w/2;
+
+  ctx.fillStyle   = '#ffffff';
+  ctx.strokeStyle = '#111111';
+  ctx.lineWidth   = 2;
+
+  // 骨の棒
+  ctx.fillRect(lx, cy - h/2, w, h);
+  ctx.strokeRect(lx, cy - h/2, w, h);
+  // 左ボール
+  ctx.beginPath(); ctx.arc(lx, cy, kr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  // 右ボール
+  ctx.beginPath(); ctx.arc(rx, cy, kr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+}
+
+function _drawSnakeHead(cx, cy, w, h, dir) {
+  // dir: 1=右向き, -1=左向き
+  const bx  = cx - dir * w/2;  // 頭の後端（首側）
+  const fx  = cx + dir * w/2;  // 頭の前端（口側）
+  const lx  = Math.min(bx, fx);
+  const top = cy - h/2;
+
+  // 頭部矩形（骨白）
+  ctx.fillStyle   = '#ffffff';
+  ctx.strokeStyle = '#111111';
+  ctx.lineWidth   = 2;
+  ctx.fillRect(lx, top, w, h);
+  ctx.strokeRect(lx, top, w, h);
+
+  // 目のくぼみ（楕円2つ）
+  ctx.fillStyle = '#2a2a2a';
+  const eyeY  = cy - h * 0.08;
+  const eyeRx = w * 0.10, eyeRy = h * 0.26;
+  ctx.beginPath(); ctx.ellipse(bx + dir * w * 0.28, eyeY, eyeRx, eyeRy, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(bx + dir * w * 0.54, eyeY, eyeRx, eyeRy, 0, 0, Math.PI*2); ctx.fill();
+
+  // 歯（前面から突出）
+  const tW = 7, tH = 11, nT = 3;
+  const gap = (h - 6) / (nT + 1);
+  ctx.fillStyle   = '#ffffff';
+  ctx.strokeStyle = '#111111';
+  ctx.lineWidth   = 1.5;
+  for (let t = 0; t < nT; t++) {
+    const ty = top + 3 + gap * (t + 1) - tH / 2;
+    const tx = dir === 1 ? fx : fx - tW;
+    ctx.fillRect(tx, ty, tW, tH);
+    ctx.strokeRect(tx, ty, tW, tH);
+  }
+
+  // 後端ボール（首の骨）
+  const kr = Math.round(h * 0.66);
+  ctx.fillStyle   = '#ffffff';
+  ctx.strokeStyle = '#111111';
+  ctx.lineWidth   = 2;
+  ctx.beginPath(); ctx.arc(bx, cy, kr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+}
+
+function drawSnakes() {
+  if (snakes.length === 0) return;
+  ctx.save();
+  ctx.translate(-cameraX, 0);
+
+  for (const sn of snakes) {
+    if (!sn.segs) continue;
+    const pts = sn.segs;
+
+    // 頭の向きを経路接線から決定
+    const rawH = _snakePosAt(sn.path, sn.headDist, sn.pathLen);
+    const rawB = _snakePosAt(sn.path, sn.headDist - 10, sn.pathLen);
+    const headDir = rawH[0] >= rawB[0] ? 1 : -1;
+
+    // 尾→頭の順に描画（頭が最前面になる）
+    for (let i = SNAKE_SEG_N; i >= 0; i--) {
+      const [cx, cy] = pts[i];
+      const sw = i === 0 ? SNAKE_HEAD_W : SNAKE_SEG_W;
+      const sh = i === 0 ? SNAKE_HEAD_H : SNAKE_SEG_H;
+      // 画面外カリング
+      if (cx + sw < cameraX - 10 || cx - sw > cameraX + LW + 10) continue;
+      if (i === 0) {
+        _drawSnakeHead(cx, cy, sw, sh, headDir);
+      } else {
+        _drawSnakeSeg(cx, cy, sw, sh);
+      }
+    }
+  }
+
+  ctx.restore();
+}
+
 function drawLava() {
   if (LAVA_ZONES.length === 0) return;
   const T = TILE_SIZE;
