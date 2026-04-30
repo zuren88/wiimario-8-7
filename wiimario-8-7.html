@@ -201,7 +201,95 @@ let lavaTime      = 0;
 // ヘビ経路（map-editor の 🐍 ヘビ経路をコピーして↓に貼り付け）
 // ============================================================
 // --- ここから貼り付け ---
-
+const SNAKE_PATH_1 = [
+  [1425, 425],  // pt1
+  [1725, 425],  // pt2
+  [1975, 425],  // pt3
+  [2725, 425],  // pt4
+  [2925, 275],  // pt5
+  [3225, 175],  // pt6
+  [3475, 175],  // pt7
+  [3625, 375],  // pt8
+  [3725, 575],  // pt9
+  [3925, 775],  // pt10
+  [4125, 775],  // pt11
+  [4325, 675],  // pt12
+  [4525, 575],  // pt13
+  [4725, 575],  // pt14
+  [4875, 625],  // pt15
+  [4975, 725],  // pt16
+  [5375, 725],  // pt17
+  [5575, 625],  // pt18
+  [5725, 525],  // pt19
+  [5925, 525],  // pt20
+  [6075, 725],  // pt21
+  [6225, 775],  // pt22
+  [6525, 725],  // pt23
+  [7075, 175],  // pt24
+  [7275, 175],  // pt25
+  [7475, 175],  // pt26
+  [7575, 425],  // pt27
+  [7675, 675],  // pt28
+  [7775, 725],  // pt29
+  [7975, 825],  // pt30
+  [8225, 825],  // pt31
+  [8475, 725],  // pt32
+  [8675, 675],  // pt33
+  [8775, 725],  // pt34
+  [9075, 875],  // pt35
+  [9275, 875],  // pt36
+  [9475, 625],  // pt37
+  [9675, 675],  // pt38
+  [9875, 875],  // pt39
+];
+const SNAKE_PATH_2 = [
+  [12575, 475],  // pt1
+  [12875, 475],  // pt2
+  [14025, 475],  // pt3
+  [14275, 275],  // pt4
+  [14425, 225],  // pt5
+  [14675, 225],  // pt6
+  [14925, 475],  // pt7
+  [15125, 925],  // pt8
+  [15275, 925],  // pt9
+  [15475, 725],  // pt10
+  [15625, 675],  // pt11
+  [15725, 725],  // pt12
+  [15875, 875],  // pt13
+  [16025, 925],  // pt14
+  [16125, 875],  // pt15
+  [16225, 725],  // pt16
+  [16375, 675],  // pt17
+  [16575, 675],  // pt18
+  [16725, 775],  // pt19
+  [16825, 875],  // pt20
+  [17225, 925],  // pt21
+  [17375, 775],  // pt22
+  [17575, 675],  // pt23
+  [17675, 575],  // pt24
+  [17825, 375],  // pt25
+  [18125, 375],  // pt26
+  [18225, 475],  // pt27
+  [18275, 675],  // pt28
+  [19375, 675],  // pt29
+  [19575, 475],  // pt30
+  [19725, 375],  // pt31
+  [19925, 375],  // pt32
+  [20025, 225],  // pt33
+  [20325, 225],  // pt34
+  [20525, 375],  // pt35
+  [20675, 475],  // pt36
+  [21025, 525],  // pt37
+  [21275, 525],  // pt38
+  [21475, 725],  // pt39
+  [21625, 925],  // pt40
+  [21825, 925],  // pt41
+  [22025, 775],  // pt42
+  [22175, 625],  // pt43
+  [22375, 625],  // pt44
+  [22525, 725],  // pt45
+  [22625, 925],  // pt46
+];
 // --- ここまで ---
 
 // ============================================================
@@ -1037,102 +1125,67 @@ function checkLavaCollision() {
 // ヘビレール描画
 // ============================================================
 function drawSnakeRails() {
-  const colors = ['#FF6600', '#FF0088', '#00DD44', '#00CCFF', '#FFDD00'];
-  // 宣言済みのSNAKE_PATH_nだけ収集（未宣言でもReferenceError不発）
   const pathDefs = [];
   /* eslint-disable no-undef */
-  if (typeof SNAKE_PATH_1 !== 'undefined' && SNAKE_PATH_1.length >= 2) pathDefs.push([SNAKE_PATH_1, colors[0]]);
-  if (typeof SNAKE_PATH_2 !== 'undefined' && SNAKE_PATH_2.length >= 2) pathDefs.push([SNAKE_PATH_2, colors[1]]);
-  if (typeof SNAKE_PATH_3 !== 'undefined' && SNAKE_PATH_3.length >= 2) pathDefs.push([SNAKE_PATH_3, colors[2]]);
-  if (typeof SNAKE_PATH_4 !== 'undefined' && SNAKE_PATH_4.length >= 2) pathDefs.push([SNAKE_PATH_4, colors[3]]);
-  if (typeof SNAKE_PATH_5 !== 'undefined' && SNAKE_PATH_5.length >= 2) pathDefs.push([SNAKE_PATH_5, colors[4]]);
+  if (typeof SNAKE_PATH_1 !== 'undefined' && SNAKE_PATH_1.length >= 2) pathDefs.push(SNAKE_PATH_1);
+  if (typeof SNAKE_PATH_2 !== 'undefined' && SNAKE_PATH_2.length >= 2) pathDefs.push(SNAKE_PATH_2);
+  if (typeof SNAKE_PATH_3 !== 'undefined' && SNAKE_PATH_3.length >= 2) pathDefs.push(SNAKE_PATH_3);
+  if (typeof SNAKE_PATH_4 !== 'undefined' && SNAKE_PATH_4.length >= 2) pathDefs.push(SNAKE_PATH_4);
+  if (typeof SNAKE_PATH_5 !== 'undefined' && SNAKE_PATH_5.length >= 2) pathDefs.push(SNAKE_PATH_5);
   /* eslint-enable no-undef */
   if (pathDefs.length === 0) return;
 
+  const RAIL_COLOR = '#b09090'; // 赤みがかった薄灰色
+  const TIE_COLOR  = '#997878';
+  const RAIL_W     = 6;  // 2本レールの間隔（片側オフセット）
+  const TIE_STEP   = 28;
+
   ctx.save();
+  ctx.globalAlpha = 0.75;
   ctx.translate(-cameraX, 0);
+  ctx.lineJoin = 'round';
+  ctx.lineCap  = 'round';
 
-  for (const [pts, col] of pathDefs) {
-
-    // 枕木（レール線より先に描いて重なりを自然に）
-    ctx.strokeStyle = '#5a3a1a';
-    ctx.lineWidth   = 6;
-    ctx.lineCap     = 'round';
-    const TIE_INTERVAL = 24; // px間隔
+  for (const pts of pathDefs) {
+    // 枕木
+    ctx.strokeStyle = TIE_COLOR;
+    ctx.lineWidth   = 3;
     let acc = 0;
     for (let i = 0; i < pts.length - 1; i++) {
       const ax = pts[i][0],   ay = pts[i][1];
       const bx = pts[i+1][0], by = pts[i+1][1];
-      const segLen = Math.hypot(bx - ax, by - ay);
-      const nx = (by - ay) / segLen; // 法線
+      const segLen = Math.hypot(bx - ax, by - ay) || 1;
+      const nx = (by - ay) / segLen;
       const ny = (ax - bx) / segLen;
-      let d = (acc === 0) ? 0 : TIE_INTERVAL - (acc % TIE_INTERVAL);
-      if (d >= segLen) { acc += segLen; continue; }
-      for (; d < segLen; d += TIE_INTERVAL) {
-        const t = d / segLen;
+      let d = acc === 0 ? 0 : TIE_STEP - (acc % TIE_STEP);
+      for (; d < segLen; d += TIE_STEP) {
+        const t  = d / segLen;
         const cx2 = ax + (bx - ax) * t;
         const cy2 = ay + (by - ay) * t;
         ctx.beginPath();
-        ctx.moveTo(cx2 + nx * 9, cy2 + ny * 9);
-        ctx.lineTo(cx2 - nx * 9, cy2 - ny * 9);
+        ctx.moveTo(cx2 + nx * (RAIL_W + 2), cy2 + ny * (RAIL_W + 2));
+        ctx.lineTo(cx2 - nx * (RAIL_W + 2), cy2 - ny * (RAIL_W + 2));
         ctx.stroke();
       }
       acc += segLen;
     }
 
-    // 外郭（黒縁）
-    ctx.beginPath();
-    ctx.moveTo(pts[0][0], pts[0][1]);
-    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
-    ctx.strokeStyle = '#111';
-    ctx.lineWidth   = 22;
-    ctx.lineJoin    = 'round';
-    ctx.lineCap     = 'round';
-    ctx.stroke();
-
-    // 左レール
-    ctx.beginPath();
-    ctx.moveTo(pts[0][0], pts[0][1]);
-    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
-    ctx.strokeStyle = '#888';
-    ctx.lineWidth   = 5;
-    ctx.lineJoin    = 'round';
-    ctx.lineCap     = 'round';
-    ctx.setLineDash([]);
-    // 右レール と左レールを法線オフセットで描く
-    const RAIL_W = 7;
+    // 2本平行レール
+    ctx.strokeStyle = RAIL_COLOR;
+    ctx.lineWidth   = 2.5;
     for (const sign of [-1, 1]) {
       ctx.beginPath();
       for (let i = 0; i < pts.length; i++) {
-        let nx2 = 0, ny2 = 0;
-        if (i < pts.length - 1) {
-          const dx = pts[i+1][0] - pts[i][0];
-          const dy = pts[i+1][1] - pts[i][1];
-          const l = Math.hypot(dx, dy) || 1;
-          nx2 = -dy / l; ny2 = dx / l;
-        } else {
-          const dx = pts[i][0] - pts[i-1][0];
-          const dy = pts[i][1] - pts[i-1][1];
-          const l = Math.hypot(dx, dy) || 1;
-          nx2 = -dy / l; ny2 = dx / l;
-        }
-        const ox = pts[i][0] + nx2 * RAIL_W * sign;
-        const oy = pts[i][1] + ny2 * RAIL_W * sign;
+        const i1 = Math.min(i, pts.length - 2);
+        const dx = pts[i1+1][0] - pts[i1][0];
+        const dy = pts[i1+1][1] - pts[i1][1];
+        const l  = Math.hypot(dx, dy) || 1;
+        const nx2 = -dy / l * sign * RAIL_W;
+        const ny2 =  dx / l * sign * RAIL_W;
+        const ox = pts[i][0] + nx2;
+        const oy = pts[i][1] + ny2;
         i === 0 ? ctx.moveTo(ox, oy) : ctx.lineTo(ox, oy);
       }
-      ctx.strokeStyle = col;
-      ctx.lineWidth = 4;
-      ctx.stroke();
-    }
-
-    // 始点・終点マーカー
-    for (const [mx, my] of [pts[0], pts[pts.length - 1]]) {
-      ctx.beginPath();
-      ctx.arc(mx, my, 10, 0, Math.PI * 2);
-      ctx.fillStyle = col;
-      ctx.fill();
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 2;
       ctx.stroke();
     }
   }
