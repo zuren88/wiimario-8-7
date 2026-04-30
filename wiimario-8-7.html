@@ -1362,28 +1362,34 @@ function _drawSnakeHead(cx, cy, w, h, dir, ang) {
   ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate(ang);
-  if (dir === -1) ctx.scale(-1, 1); // 左向き時は左右反転
+  if (dir === -1) ctx.scale(-1, 1);
 
-  // 頭部矩形（骨白）：ローカル座標で右向き固定描画
   const hw = w/2, hh = h/2;
-  ctx.fillStyle   = '#ffffff';
-  ctx.strokeStyle = '#111111';
+
+  // 頭部（ダークネイビー）
+  ctx.fillStyle   = '#162040';
+  ctx.strokeStyle = '#080d1a';
   ctx.lineWidth   = 2;
   ctx.fillRect(-hw, -hh, w, h);
   ctx.strokeRect(-hw, -hh, w, h);
 
-  // 目のくぼみ（楕円2つ）：後端から w*0.28 / w*0.54 の位置
-  ctx.fillStyle = '#2a2a2a';
+  // 目のくぼみ（暗い穴）
   const eyeY  = -h * 0.08;
   const eyeRx = w * 0.10, eyeRy = h * 0.26;
+  ctx.fillStyle = '#050d20';
   ctx.beginPath(); ctx.ellipse(-hw + w * 0.28, eyeY, eyeRx, eyeRy, 0, 0, Math.PI*2); ctx.fill();
   ctx.beginPath(); ctx.ellipse(-hw + w * 0.54, eyeY, eyeRx, eyeRy, 0, 0, Math.PI*2); ctx.fill();
 
-  // 歯（右端＝前端から突出）
-  const tW = 5, tH = 9, nT = 3;
+  // 目のハイライト（青白い光）
+  ctx.fillStyle = '#8ab0e0';
+  ctx.beginPath(); ctx.arc(-hw + w * 0.28 - eyeRx * 0.2, eyeY - eyeRy * 0.2, eyeRx * 0.4, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(-hw + w * 0.54 - eyeRx * 0.2, eyeY - eyeRy * 0.2, eyeRx * 0.4, 0, Math.PI*2); ctx.fill();
+
+  // 歯（前端から突出・白い）
+  const tW = 5, tH = 10, nT = 3;
   const gap = (h - 4) / (nT + 1);
-  ctx.fillStyle   = '#ffffff';
-  ctx.strokeStyle = '#111111';
+  ctx.fillStyle   = '#ddeeff';
+  ctx.strokeStyle = '#080d1a';
   ctx.lineWidth   = 1.5;
   for (let t = 0; t < nT; t++) {
     const ty = -hh + 2 + gap * (t + 1) - tH / 2;
@@ -1391,12 +1397,25 @@ function _drawSnakeHead(cx, cy, w, h, dir, ang) {
     ctx.strokeRect(hw, ty, tW, tH);
   }
 
-  // 後端ボール（首の骨）
+  // 上部スパイン（頭部中央に1本）
+  ctx.fillStyle   = '#ddeeff';
+  ctx.strokeStyle = '#080d1a';
+  ctx.lineWidth   = 1.5;
+  const sW = w * 0.16, sH = h * 0.55, sx = 0;
+  ctx.beginPath();
+  ctx.moveTo(sx - sW/2, -hh);
+  ctx.lineTo(sx,         -hh - sH);
+  ctx.lineTo(sx + sW/2, -hh);
+  ctx.closePath();
+  ctx.fill(); ctx.stroke();
+
+  // 後端ボール（首の骨・スチールブルー）
   const kr = Math.round(h * 0.66);
-  ctx.fillStyle   = '#ffffff';
-  ctx.strokeStyle = '#111111';
+  ctx.fillStyle   = '#4466aa';
+  ctx.strokeStyle = '#080d1a';
   ctx.lineWidth   = 2;
   ctx.beginPath(); ctx.arc(-hw, 0, kr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
   ctx.restore();
 }
 
