@@ -1188,17 +1188,22 @@ function _snakePosAt(path, dist, pathLen) {
   return [path[path.length-1][0], path[path.length-1][1]];
 }
 
-// 全セグメント座標を計算（量子化でカクカク演出）
+// 全セグメント座標を計算（カクカク＋傾き付き）
 function _snakeSegs(sn) {
   const segs = [];
   for (let i = 0; i <= SNAKE_SEG_N; i++) {
-    const raw = _snakePosAt(sn.path, sn.headDist - SNAKE_GAP * i, sn.pathLen);
-    segs.push([
-      Math.round(raw[0] / SNAKE_SNAP) * SNAKE_SNAP,
-      Math.round(raw[1] / SNAKE_SNAP) * SNAKE_SNAP,
-    ]);
+    const d = sn.headDist - SNAKE_GAP * i;
+    // 距離をfloor量子化 → 後退ゼロのカクカク
+    const snapD = Math.floor(d / SNAKE_SNAP) * SNAKE_SNAP;
+    const pos = _snakePosAt(sn.path, snapD, sn.pathLen);
+    // 傾き：前後30px地点の接線、±20°でクランプ
+    const pA  = _snakePosAt(sn.path, snapD - 30, sn.pathLen);
+    const pB  = _snakePosAt(sn.path, snapD + 30, sn.pathLen);
+    const ang = Math.max(-Math.PI / 9, Math.min(Math.PI / 9,
+                  Math.atan2(pB[1] - pA[1], pB[0] - pA[0])));
+    segs.push([pos[0], pos[1], ang]);
   }
-  return segs; // segs[0]=頭, segs[1..7]=胴体
+  return segs; // segs[i] = [x, y, angle]
 }
 
 // ヘビを初期化（startGame から呼ぶ）
