@@ -1853,6 +1853,7 @@ function startGame() {
   goalTimer        = 0;
   lavaTime         = 0;
   for (const g of LAVA_GROUPS) { g.timer = Math.random() * 3; g.phase = 0; g.height = 0; g.particles = []; }
+  initSnakes();
   goalTopBonus     = false;
   goalFireworkTimer = 0;
   FIREWORKS.length  = 0;
