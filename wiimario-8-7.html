@@ -1052,10 +1052,7 @@ function drawSnakeRails() {
   ctx.save();
   ctx.translate(-cameraX, 0);
 
-  for (let pi = 0; pi < paths.length; pi++) {
-    const pts = paths[pi];
-    if (!pts || pts.length < 2) continue;
-    const col = colors[pi];
+  for (const [pts, col] of pathDefs) {
 
     // 枕木（レール線より先に描いて重なりを自然に）
     ctx.strokeStyle = '#5a3a1a';
