@@ -1263,7 +1263,6 @@ function updateSnakes(dt) {
       const dx = curSegs[si][0] - prevSegs[si][0];
       if (Math.abs(dx) < 200) {
         mario.x += dx;
-        sn.riderVx = dx / dt; // ジャンプ慣性用に蛇の水平速度を保持
       }
     }
   }
