@@ -1221,11 +1221,14 @@ function initSnakes() {
   if (typeof SNAKE_PATH_4 !== 'undefined' && SNAKE_PATH_4.length >= 2) paths.push(SNAKE_PATH_4);
   if (typeof SNAKE_PATH_5 !== 'undefined' && SNAKE_PATH_5.length >= 2) paths.push(SNAKE_PATH_5);
   /* eslint-enable no-undef */
+  // 蛇全体の距離長（尾がpath先頭に来るheadDist初期値）
+  const snakeLen = (SNAKE_HEAD_W + SNAKE_SEG_W) / 2 + (SNAKE_SEG_N - 1) * SNAKE_SEG_W;
   for (const path of paths) {
     let pLen = 0;
     for (let i = 0; i < path.length - 1; i++)
       pLen += Math.hypot(path[i+1][0]-path[i][0], path[i+1][1]-path[i][1]);
-    const sn = { path, pathLen: pLen, headDist: 0, segs: null };
+    const sn = { path, pathLen: pLen, headDist: snakeLen, segs: null,
+                 speed: SNAKE_SPEED, active: false };
     sn.segs = _snakeSegs(sn);
     snakes.push(sn);
   }
