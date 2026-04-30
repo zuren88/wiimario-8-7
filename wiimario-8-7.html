@@ -2141,13 +2141,13 @@ function draw() {
 
   drawBackground();
   drawSnakeRails();     // ヘビ経路レール（最背面：背景の直後）
+  drawSnakes();         // ヘビ（マグマの後ろ）
   drawLava();
   drawPakkunEnemies();  // パックンをタイル・土管の下レイヤーで描画
   drawTiles();
   drawOverlayTiles();
   drawPipes();
   drawLifts();
-  drawSnakes();         // ヘビ（タイルの上・マリオの下）
   drawItems();          // アイテム（キノコ・ファイアフラワー）
   drawStarCoins();      // スターコイン（2×2タイル）
   drawRedRings();       // 赤リング（2×2タイル）
