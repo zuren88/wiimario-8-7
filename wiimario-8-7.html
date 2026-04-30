@@ -1269,24 +1269,46 @@ function updateSnakes(dt) {
 
 // ヘビへの着地判定（resolveTileY / resolveLifts の後に呼ぶ）
 function resolveSnakes() {
+  const prev = mario.ridingSnakeSeg;
   mario.ridingSnakeSeg = null;
+
+  // 前フレームで乗っていた場合：Y位置チェックを省略して直スナップ（がたつき防止）
+  if (prev && prev.sn.segs) {
+    const { sn, si } = prev;
+    const [sx, sy] = sn.segs[si];
+    const sw  = si === 0 ? SNAKE_HEAD_W : SNAKE_SEG_W;
+    const sh  = si === 0 ? SNAKE_HEAD_H : SNAKE_SEG_H;
+    const segLeft  = sx - sw / 2 + 4;
+    const segRight = sx + sw / 2 - 4;
+    // 横方向オーバーラップ＆ジャンプ中でなければそのまま乗り続ける
+    if (mario.x + mario.w > segLeft && mario.x < segRight && mario.vy >= 0) {
+      mario.y  = sy - sh / 2 - mario.h;
+      mario.vy = 0;
+      mario.onGround = true;
+      mario.ridingSnakeSeg = prev;
+      return;
+    }
+  }
+
+  // 新規着地検出
   for (const sn of snakes) {
     if (!sn.segs) continue;
     for (let i = 0; i <= SNAKE_SEG_N; i++) {
       const [sx, sy] = sn.segs[i];
       const sw = i === 0 ? SNAKE_HEAD_W : SNAKE_SEG_W;
       const sh = i === 0 ? SNAKE_HEAD_H : SNAKE_SEG_H;
-      const segTop  = sy - sh / 2;
-      const segLeft = sx - sw / 2 + 4;
+      const segTop   = sy - sh / 2;
+      const segLeft  = sx - sw / 2 + 4;
       const segRight = sx + sw / 2 - 4;
       const mL = mario.x, mR = mario.x + mario.w;
       const mB = mario.y + mario.h;
       if (mR <= segLeft || mL >= segRight) continue;
       if (mB >= segTop - 4 && mB <= segTop + sh * 0.8 && mario.y < segTop + 4) {
-        mario.y          = segTop - mario.h;
-        mario.vy         = 0;
+        mario.y  = segTop - mario.h;
+        mario.vy = 0;
         mario.onGround   = true;
         mario.ridingSnakeSeg = { sn, si: i };
+        sn.active = true; // 初乗りで起動
         return;
       }
     }
