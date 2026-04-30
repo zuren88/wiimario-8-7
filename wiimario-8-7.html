@@ -2067,6 +2067,8 @@ function update(dt) {
   updateSnakes(dt);
 
   mario.x += mario.vx * dt;
+  // 蛇ジャンプ慣性を適用（空中のみ・着地で消去）
+  if (mario.snakeInertiaVx !== 0) mario.x += mario.snakeInertiaVx * dt;
   resolveTileX();
 
   const wasOnGround = mario.onGround;
@@ -2075,6 +2077,11 @@ function update(dt) {
   resolveTileY();
   resolveLifts(dt);
   resolveSnakes();
+  // 慣性の減衰：着地で即消去、空中は徐々に減衰
+  if (mario.snakeInertiaVx !== 0) {
+    if (mario.onGround) mario.snakeInertiaVx = 0;
+    else mario.snakeInertiaVx *= Math.pow(0.92, dt * 60);
+  }
   collectCoins();
   collectStarCoins();
   collectRedRings();
