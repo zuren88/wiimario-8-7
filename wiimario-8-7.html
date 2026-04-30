@@ -1234,31 +1234,35 @@ function initSnakes() {
   }
 }
 
-// 毎フレーム：ヘビ進行＋乗っているマリオを搬送
+// 毎フレーム：ヘビ進行（active時のみ）＋乗っているマリオをX搬送
 function updateSnakes(dt) {
-  const SLOPE_TH = 8 * Math.PI / 180; // 8度未満は速度変化なし
+  const SLOPE_TH   = 8 * Math.PI / 180;
+  const ACCEL_DOWN = 200; // 下り加速度 px/s²
+  const ACCEL_UP   = 100; // 上り減速度 px/s²（下りの半分）
   for (const sn of snakes) {
     const prevSegs = sn.segs;
-    // 傾斜速度：前方40px先との高低差で倍率計算
-    const pA = _snakePosAt(sn.path, sn.headDist, sn.pathLen);
-    const pB = _snakePosAt(sn.path, sn.headDist + 40, sn.pathLen);
-    const slope = Math.atan2(pB[1] - pA[1], pB[0] - pA[0]);
-    const spd = Math.abs(slope) > SLOPE_TH
-      ? SNAKE_SPEED * Math.max(0.4, Math.min(1.8, 1.0 + Math.sin(slope) * 1.0))
-      : SNAKE_SPEED;
-    sn.headDist = (sn.headDist + spd * dt) % sn.pathLen;
+
+    if (sn.active) {
+      // 傾斜に応じて速度を蓄積（平地は維持・下りで加速・上りで減速）
+      const pA    = _snakePosAt(sn.path, sn.headDist, sn.pathLen);
+      const pB    = _snakePosAt(sn.path, sn.headDist + 40, sn.pathLen);
+      const slope = Math.atan2(pB[1] - pA[1], pB[0] - pA[0]);
+      if (Math.abs(slope) > SLOPE_TH) {
+        const accel = slope > 0 ? ACCEL_DOWN : ACCEL_UP;
+        sn.speed += accel * Math.sin(slope) * dt;
+      }
+      sn.speed    = Math.max(SNAKE_SPEED * 0.4, Math.min(SNAKE_SPEED * 2.5, sn.speed));
+      sn.headDist = (sn.headDist + sn.speed * dt) % sn.pathLen;
+    }
+
     const curSegs = _snakeSegs(sn);
     sn.segs = curSegs;
 
+    // X方向のみ搬送（Y位置はresolveSnakesで直スナップ）
     if (mario.ridingSnakeSeg && mario.ridingSnakeSeg.sn === sn && prevSegs) {
       const si = mario.ridingSnakeSeg.si;
       const dx = curSegs[si][0] - prevSegs[si][0];
-      const dy = curSegs[si][1] - prevSegs[si][1];
-      // 経路ループ時のテレポート防止
-      if (Math.abs(dx) < 200 && Math.abs(dy) < 200) {
-        mario.x += dx;
-        mario.y += dy;
-      }
+      if (Math.abs(dx) < 200) mario.x += dx;
     }
   }
 }
