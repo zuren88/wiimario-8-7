@@ -1037,13 +1037,17 @@ function checkLavaCollision() {
 // ヘビレール描画
 // ============================================================
 function drawSnakeRails() {
-  const _p = (n) => (typeof n !== 'undefined' ? n : []);
-  const paths = [_p(typeof SNAKE_PATH_1!=='undefined'&&SNAKE_PATH_1),
-                 _p(typeof SNAKE_PATH_2!=='undefined'&&SNAKE_PATH_2),
-                 _p(typeof SNAKE_PATH_3!=='undefined'&&SNAKE_PATH_3),
-                 _p(typeof SNAKE_PATH_4!=='undefined'&&SNAKE_PATH_4),
-                 _p(typeof SNAKE_PATH_5!=='undefined'&&SNAKE_PATH_5)];
   const colors = ['#FF6600', '#FF0088', '#00DD44', '#00CCFF', '#FFDD00'];
+  // 宣言済みのSNAKE_PATH_nだけ収集（未宣言でもReferenceError不発）
+  const pathDefs = [];
+  /* eslint-disable no-undef */
+  if (typeof SNAKE_PATH_1 !== 'undefined' && SNAKE_PATH_1.length >= 2) pathDefs.push([SNAKE_PATH_1, colors[0]]);
+  if (typeof SNAKE_PATH_2 !== 'undefined' && SNAKE_PATH_2.length >= 2) pathDefs.push([SNAKE_PATH_2, colors[1]]);
+  if (typeof SNAKE_PATH_3 !== 'undefined' && SNAKE_PATH_3.length >= 2) pathDefs.push([SNAKE_PATH_3, colors[2]]);
+  if (typeof SNAKE_PATH_4 !== 'undefined' && SNAKE_PATH_4.length >= 2) pathDefs.push([SNAKE_PATH_4, colors[3]]);
+  if (typeof SNAKE_PATH_5 !== 'undefined' && SNAKE_PATH_5.length >= 2) pathDefs.push([SNAKE_PATH_5, colors[4]]);
+  /* eslint-enable no-undef */
+  if (pathDefs.length === 0) return;
 
   ctx.save();
   ctx.translate(-cameraX, 0);
