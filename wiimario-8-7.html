@@ -2377,6 +2377,26 @@ function updateGoal(dt) {
 function update(dt) {
   if (gameState !== 'playing') return;
 
+  // ── ワープフェード処理（通常ゲームロジックより先に処理）──
+  if (warpState === 'fading_out') {
+    warpAlpha = Math.min(1, warpAlpha + dt / 0.35);
+    mario.y  += TILE_SIZE * 3 * dt; // 土管に沈む演出
+    if (warpAlpha >= 1) {
+      mario.x  = _warpDest.x;
+      mario.y  = _warpDest.y;
+      mario.vx = 0;
+      mario.vy = 0;
+      cameraX  = Math.max(0, Math.min(mario.x - LW / 2, STAGE_WIDTH - LW));
+      warpState = 'fading_in';
+    }
+    return;
+  }
+  if (warpState === 'fading_in') {
+    warpAlpha = Math.max(0, warpAlpha - dt / 0.35);
+    if (warpAlpha <= 0) warpState = 'none';
+    return;
+  }
+
   // ゴールシーケンス中は専用ロジック
   if (goalPhase !== 'none') {
     updateGoal(dt);
