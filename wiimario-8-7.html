@@ -2586,6 +2586,10 @@ function update(dt) {
   // カメラ追従
   const targetX = mario.x - LW / 2;
   cameraX = Math.max(0, Math.min(targetX, STAGE_WIDTH - LW));
+  // ワープ前エリア：右端がcol484を超えないようにクランプ
+  if (!warpUsed) {
+    cameraX = Math.min(cameraX, WARP_CAM_STOP_COL * TILE_SIZE - LW);
+  }
 }
 
 // ============================================================
