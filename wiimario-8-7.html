@@ -2383,15 +2383,14 @@ function startGoal() {
 function updateGoal(dt) {
   const fy = floorY();
 
-  // 花火更新（最上段ボーナス中・全フェーズ共通）
-  if (goalTopBonus) {
-    goalFireworkTimer -= dt;
-    if (goalFireworkTimer <= 0) {
-      spawnFireworkRocket();
-      goalFireworkTimer = 0.32 + Math.random() * 0.35;
-    }
-    updateFireworks(dt);
+  // 花火更新（常時・ゴール全フェーズ）
+  goalFireworkTimer -= dt;
+  if (goalFireworkTimer <= 0) {
+    spawnFireworkRocket();
+    if (Math.random() < 0.65) spawnFireworkRocket(); // 65%で2発同時
+    goalFireworkTimer = 0.13 + Math.random() * 0.22;
   }
+  updateFireworks(dt);
 
   if (goalPhase === 'slide') {
     // ポールをするする滑り降りる
