@@ -1321,30 +1321,6 @@ function collectRedRings() {
         mario.y < rr.y + rr.h && mario.y + mario.h > rr.y) {
       rr.collected = true;
       coins += 5; score += 500;
-      // 赤コイン出現
-      if (RED_COIN_TEMPLATES.length > 0) {
-        RED_COINS_RUNTIME = RED_COIN_TEMPLATES.map(t => ({
-          x: t.x, y: t.y, w: TILE_SIZE, h: TILE_SIZE, collected: false
-        }));
-        redCoinCollected = 0;
-      }
-    }
-  }
-}
-
-function collectRedCoins() {
-  for (const rc of RED_COINS_RUNTIME) {
-    if (rc.collected) continue;
-    if (mario.x < rc.x + rc.w && mario.x + mario.w > rc.x &&
-        mario.y < rc.y + rc.h && mario.y + mario.h > rc.y) {
-      rc.collected = true;
-      redCoinCollected++;
-      coins++; score += 200;
-      spawnCoinEffect(rc.x + rc.w / 2, rc.y + rc.h / 2);
-      if (redCoinCollected >= RED_COIN_TEMPLATES.length) {
-        spawnRedRingReward();
-        RED_COINS_RUNTIME = [];
-      }
     }
   }
 }
