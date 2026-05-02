@@ -2747,16 +2747,128 @@ function drawGreenBlob(cx, cy, s) {
   ctx.restore();
 }
 
-// ---- タイトル画面（仮：白背景） ----
+// ---- タイトル画面 ----
 function drawTitle() {
-  ctx.fillStyle = '#ffffff';
+  ctx.save();
+
+  // 黒背景
+  ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, LW, LH);
+
+  // ── バナー（上部）──
+  const bannerH = Math.round(LH * 0.165);
+
+  // 炎グラデーション背景（横方向）
+  const bgGrad = ctx.createLinearGradient(0, 0, LW, 0);
+  bgGrad.addColorStop(0.00, '#2d0600');
+  bgGrad.addColorStop(0.12, '#8a1c00');
+  bgGrad.addColorStop(0.30, '#c03a00');
+  bgGrad.addColorStop(0.50, '#d85000');
+  bgGrad.addColorStop(0.70, '#c03a00');
+  bgGrad.addColorStop(0.88, '#8a1c00');
+  bgGrad.addColorStop(1.00, '#2d0600');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, LW, bannerH);
+
+  // 上下を暗く（縦グラデーション重ね）
+  const vGrad = ctx.createLinearGradient(0, 0, 0, bannerH);
+  vGrad.addColorStop(0,   'rgba(0,0,0,0.55)');
+  vGrad.addColorStop(0.35,'rgba(0,0,0,0.05)');
+  vGrad.addColorStop(0.65,'rgba(0,0,0,0.05)');
+  vGrad.addColorStop(1,   'rgba(0,0,0,0.55)');
+  ctx.fillStyle = vGrad;
+  ctx.fillRect(0, 0, LW, bannerH);
+
+  // 金枠線（上下2本ずつ）
+  const drawLine = (y, w, col) => {
+    ctx.strokeStyle = col; ctx.lineWidth = w;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(LW, y); ctx.stroke();
+  };
+  drawLine(3,  4, '#c8980a');
+  drawLine(10, 2, '#f0cc30');
+  drawLine(bannerH - 3,  4, '#c8980a');
+  drawLine(bannerH - 10, 2, '#f0cc30');
+
+  // ── ボス顔アイコン（左右2個ずつ）──
+  const faceR = bannerH * 0.27;
+  const faceY = bannerH / 2;
+  const drawFace = (fx) => {
+    const grd = ctx.createRadialGradient(fx, faceY, 0, fx, faceY, faceR * 2.2);
+    grd.addColorStop(0,   'rgba(255,220,50,0.55)');
+    grd.addColorStop(0.5, 'rgba(220,120,0,0.20)');
+    grd.addColorStop(1,   'rgba(0,0,0,0)');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.arc(fx, faceY, faceR * 2.2, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = '#f0c028';
+    ctx.beginPath(); ctx.arc(fx, faceY, faceR, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#9a7000'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(fx, faceY, faceR, 0, Math.PI * 2); ctx.stroke();
+
+    const eR = faceR * 0.22;
+    ctx.fillStyle = '#180800';
+    ctx.beginPath(); ctx.arc(fx - faceR*0.3, faceY - faceR*0.05, eR, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(fx + faceR*0.3, faceY - faceR*0.05, eR, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.beginPath(); ctx.arc(fx - faceR*0.23, faceY - faceR*0.14, eR*0.4, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(fx + faceR*0.37, faceY - faceR*0.14, eR*0.4, 0, Math.PI*2); ctx.fill();
+  };
+  drawFace(LW * 0.065);
+  drawFace(LW * 0.205);
+  drawFace(LW * 0.795);
+  drawFace(LW * 0.935);
+
+  // ── "World  •  8 – 7  •" テキスト ──
+  const cy = bannerH / 2;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+
+  const drawOutlineText = (text, x, y, fillColor, fontSize) => {
+    ctx.font = `bold ${fontSize}px 'Chlorinap', monospace`;
+    ctx.strokeStyle = 'rgba(0,0,0,0.92)'; ctx.lineWidth = Math.round(fontSize * 0.12);
+    ctx.strokeText(text, x, y);
+    ctx.fillStyle = fillColor;
+    ctx.fillText(text, x, y);
+  };
+
+  drawOutlineText('World',  LW/2 - 158, cy,     '#ffffff', 66);
+  drawOutlineText('•', LW/2 -  42, cy - 7, '#ffffff', 44);
+  drawOutlineText('8',      LW/2 +  18, cy,     '#88ee00', 76);
+  drawOutlineText('–', LW/2 +  78, cy,     '#ffffff', 66);
+  drawOutlineText('7',      LW/2 + 138, cy,     '#88ee00', 76);
+  drawOutlineText('•', LW/2 + 200, cy - 7, '#ffffff', 44);
+
+  // ── 中央: マメシバ ＋ ×lives ──
+  const imgH   = 130;
+  const imgW   = 130;
+  const charX  = LW / 2 - 90;
+  const charY  = LH / 2 - imgH / 2;
+
+  if (imgReady('マメシバ背景透過')) {
+    ctx.drawImage(IMGS['マメシバ背景透過'], charX, charY, imgW, imgH);
+  } else {
+    ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(charX + imgW/2, charY + imgH/2, imgH/2, 0, Math.PI*2);
+    ctx.fill(); ctx.stroke();
+  }
+
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.font = "bold 68px 'Chlorinap', monospace";
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 7;
+  ctx.strokeText('×' + lives, charX + imgW + 14, LH / 2 + 2);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText('×' + lives, charX + imgW + 14, LH / 2 + 2);
+
+  // 点滅スタートメッセージ
   if (Math.floor(Date.now() / 500) % 2 === 0) {
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.font = "30px 'Chlorinap', monospace";
-    ctx.fillStyle = '#000000';
-    ctx.fillText('▶  Enter キーで開始', LW / 2, LH / 2);
+    ctx.font = "28px 'Chlorinap', monospace";
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 4;
+    ctx.strokeText('▶  Enter キーで開始', LW / 2, LH * 0.82);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('▶  Enter キーで開始', LW / 2, LH * 0.82);
   }
+
+  ctx.restore();
 }
 /* ↓ 以下の旧タイトル描画コードは無効化 */
 function _drawTitle_old_unused() {
