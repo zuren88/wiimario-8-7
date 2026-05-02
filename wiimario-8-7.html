@@ -2543,15 +2543,19 @@ function update(dt) {
   if (mario.x < 0)                     { mario.x = 0;                     mario.vx = 0; }
   if (mario.x + mario.w > STAGE_WIDTH) { mario.x = STAGE_WIDTH - mario.w; mario.vx = 0; }
 
-  // ワープ入口判定（土管真上でSキー長押し1秒）
-  if (warpState === 'none' && mario.onGround && keys['KeyS']) {
-    const mc = mario.x + mario.w / 2;
+  // ワープ入口判定（横向き土管でDキー長押し0.5秒）
+  if (warpState === 'none' && keys['KeyD']) {
     let hit = false;
     for (const wp of WARP_PIPES) {
-      const px = wp.inCol * TILE_SIZE;
-      if (mc >= px && mc < px + TILE_SIZE * 3) {
+      const px  = wp.inCol * TILE_SIZE;
+      const pcy = wp.inRow * TILE_SIZE + TILE_SIZE; // 土管中心Y（2タイル高の中央）
+      const mr  = mario.x + mario.w;
+      const mcy = mario.y + mario.h / 2;
+      // 右端が土管左面に接近＋Y位置が土管開口範囲内
+      if (mr >= px - 5 && mr <= px + TILE_SIZE * 2 &&
+          Math.abs(mcy - pcy) < TILE_SIZE * 1.5) {
         warpEnterTimer += dt;
-        if (warpEnterTimer >= 1.0) {
+        if (warpEnterTimer >= 0.5) {
           const destX = wp.outCol * TILE_SIZE + TILE_SIZE * 1.5 - mario.w / 2;
           _warpDest   = { x: destX, y: getSpawnY(destX, mario.w, mario.h) };
           warpState   = 'fading_out';
