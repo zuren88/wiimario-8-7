@@ -2232,6 +2232,24 @@ function drawRedRings() {
   }
 }
 
+function drawRedCoins() {
+  for (const rc of RED_COINS_RUNTIME) {
+    if (rc.collected) continue;
+    const sx = rc.x - cameraX;
+    if (sx + rc.w < 0 || sx > LW) continue;
+    ctx.save();
+    if (imgReady('コイン赤')) {
+      ctx.drawImage(IMGS['コイン赤'], sx, rc.y, rc.w, rc.h);
+    } else {
+      ctx.fillStyle = '#ff3300'; ctx.strokeStyle = '#aa0000'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.ellipse(sx + rc.w / 2, rc.y + rc.h / 2, rc.w / 2 - 4, rc.h / 2 - 4, 0, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+
 // ============================================================
 // ゲーム初期化
 // ============================================================
