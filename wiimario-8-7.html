@@ -2588,10 +2588,21 @@ function update(dt) {
 
   // カメラ追従
   const targetX = mario.x - LW / 2;
-  cameraX = Math.max(0, Math.min(targetX, STAGE_WIDTH - LW));
-  // ワープ前エリア：右端がcol484を超えないようにクランプ
   if (!warpUsed) {
-    cameraX = Math.min(cameraX, WARP_CAM_STOP_COL * TILE_SIZE - LW);
+    // ワープ前：右端がcol484を超えないようにクランプ
+    cameraX = Math.max(0, Math.min(targetX, WARP_CAM_STOP_COL * TILE_SIZE - LW));
+  } else if (warpCameraFixed) {
+    // ワープ直後：col550に固定。マリオが中央位置に来たら追従再開
+    const fixedCamX = WARP_CAM_START_COL * TILE_SIZE;
+    if (targetX >= fixedCamX) {
+      warpCameraFixed = false;
+      cameraX = Math.max(0, Math.min(targetX, STAGE_WIDTH - LW));
+    } else {
+      cameraX = fixedCamX;
+    }
+  } else {
+    // 通常追従
+    cameraX = Math.max(0, Math.min(targetX, STAGE_WIDTH - LW));
   }
 }
 
