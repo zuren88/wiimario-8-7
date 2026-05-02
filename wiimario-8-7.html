@@ -1577,7 +1577,10 @@ function resolveSnakes() {
         mario.vy = 0;
         mario.onGround   = true;
         mario.ridingSnakeSeg = { sn, si: i };
-        sn.active = true; // 初乗りで起動
+        if (!sn.active) {
+          sn.active = true; // 初乗りで起動
+          if (sn.syncStart) sn.syncStart.active = true; // 連動起動（蛇5）
+        }
         return;
       }
     }
