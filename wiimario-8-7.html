@@ -2059,6 +2059,25 @@ function updateItems(dt) {
     const item = ITEMS[i];
     if (!item.active) { ITEMS.splice(i, 1); continue; }
 
+    if (item.falling) {
+      // 上から降ってくるアイテム（重力落下・着地後は通常物理へ）
+      item.vy += GRAVITY * dt;
+      item.vy = Math.min(item.vy, MAX_FALL_SPEED);
+      item.y += item.vy * dt;
+      if (item.y + item.h >= 0) { // 画面内に入ったら床判定開始
+        const lCol = Math.floor(item.x / TILE_SIZE);
+        const rCol = Math.floor((item.x + item.w - 1) / TILE_SIZE);
+        const bRow = Math.floor((item.y + item.h) / TILE_SIZE);
+        if (isSolidAt(lCol, bRow) || isSolidAt(rCol, bRow)) {
+          item.y = bRow * TILE_SIZE - item.h;
+          item.vy = 0;
+          item.falling = false;
+          if (item.type === 'mushroom') item.vx = ITEM_MUSHROOM_SPEED;
+        }
+      }
+      continue;
+    }
+
     if (item.spawning) {
       // 出現アニメーション：上に向かって上昇
       item.y -= ITEM_SPAWN_SPEED * dt;
