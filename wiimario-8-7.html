@@ -2396,8 +2396,9 @@ function update(dt) {
       mario.y  = _warpDest.y;
       mario.vx = 0;
       mario.vy = 0;
-      cameraX  = WARP_CAM_START_COL * TILE_SIZE; // 左端をcol550に固定
-      warpUsed  = true;
+      cameraX         = WARP_CAM_START_COL * TILE_SIZE; // 左端をcol550に固定
+      warpUsed        = true;
+      warpCameraFixed = true; // マリオが中央に来るまでカメラ固定
       warpState = 'fading_in';
     }
     return;
