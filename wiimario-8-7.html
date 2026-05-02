@@ -983,14 +983,15 @@ let effects = [];
 const FW_COLORS = ['#FF4444','#FF8844','#FFFF44','#44FF88','#44FFFF','#8844FF','#FF44FF','#FFFFFF','#FFD700','#FF6699'];
 
 function spawnFireworkRocket() {
-  const x     = cameraX + 80 + Math.random() * (LW - 160);
-  const color = FW_COLORS[Math.floor(Math.random() * FW_COLORS.length)];
+  const x      = cameraX + 60 + Math.random() * (LW - 120);
+  const color  = FW_COLORS[Math.floor(Math.random() * FW_COLORS.length)];
+  const color2 = FW_COLORS[Math.floor(Math.random() * FW_COLORS.length)];
   FIREWORKS.push({
     x, y: LH + 20,
-    vx: (Math.random() - 0.5) * 90,
-    vy: -(380 + Math.random() * 260),
-    color,
-    burstY: 80 + Math.random() * 280,
+    vx: (Math.random() - 0.5) * 160,
+    vy: -(520 + Math.random() * 360),
+    color, color2,
+    burstY: 45 + Math.random() * 320,
   });
 }
 
