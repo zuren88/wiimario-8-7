@@ -159,7 +159,7 @@ function mRect(c, r, w, h, id) { for(let dr=0;dr<h;dr++) hLine(c,r+dr,w,id); }
 // { x, y, w, h, flip } flip=true で天井型（上下反転）
 // ── ワープ設定 ──
 const WARP_PIPES = [
-  { inCol: 474, outCol: 559 }, // 入口 x=23700px → 出口 x=27950px
+  { inCol: 474, inRow: 14, outCol: 559 }, // 横向き入口 x=23700px row14 → 出口 x=27950px
 ];
 let warpState      = 'none'; // 'none' | 'fading_out' | 'fading_in'
 let warpAlpha      = 0;       // 黒オーバーレイ（0=透明, 1=完全黒）
