@@ -207,16 +207,6 @@ function addRedRing(c, r) {
   RED_RINGS.push(Object.assign({}, ring));
 }
 
-// ============================================================
-// 赤コイン（赤リング通過後に出現・8枚集めるとアイテムが降ってくる）
-// ============================================================
-let RED_COIN_TEMPLATES = []; // buildMap で addRedCoinSpawn() した座標一覧
-function addRedCoinSpawn(c, r) {
-  RED_COIN_TEMPLATES.push({ x: c * TILE_SIZE, y: r * TILE_SIZE });
-}
-let RED_COINS_RUNTIME = []; // 赤リング通過後に出現するコイン（ランタイム）
-let redCoinCollected = 0;
-
 // 溶岩（配列宣言は buildMap より前に必要）
 let LAVA_ZONES    = [];
 let LAVA_SPLASHES = [];
