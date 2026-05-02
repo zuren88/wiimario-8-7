@@ -2301,6 +2301,10 @@ function startGame() {
   goalTopBonus     = false;
   goalFireworkTimer = 0;
   FIREWORKS.length  = 0;
+  warpState      = 'none';
+  warpAlpha      = 0;
+  warpEnterTimer = 0;
+  _warpDest      = null;
   gameState  = 'playing';
 }
 
