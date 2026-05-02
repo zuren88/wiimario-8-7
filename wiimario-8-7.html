@@ -2037,6 +2037,20 @@ function spawnItem(type, blockX, blockY) {
   });
 }
 
+function spawnRedRingReward() {
+  const type = mario.state === 'small' ? 'mushroom' : 'flower';
+  ITEMS.push({
+    type,
+    x: mario.x + (mario.w - TILE_SIZE) / 2,
+    y: -TILE_SIZE,
+    vx: 0, vy: 300,
+    w: TILE_SIZE, h: TILE_SIZE,
+    active: true,
+    spawning: false,
+    falling: true,
+  });
+}
+
 let ITEMS = [];
 
 // アイテム更新（物理・収集）
