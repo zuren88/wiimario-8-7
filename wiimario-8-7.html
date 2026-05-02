@@ -161,6 +161,10 @@ function mRect(c, r, w, h, id) { for(let dr=0;dr<h;dr++) hLine(c,r+dr,w,id); }
 const WARP_PIPES = [
   { inCol: 474, outCol: 559 }, // 入口 x=23700px → 出口 x=27950px
 ];
+let warpState      = 'none'; // 'none' | 'fading_out' | 'fading_in'
+let warpAlpha      = 0;       // 黒オーバーレイ（0=透明, 1=完全黒）
+let warpEnterTimer = 0;       // S長押し継続秒数
+let _warpDest      = null;    // { x, y } ワープ先座標
 const PIPES = [];
 function gPipe(c, r, tileH) {
   const pw = TILE_SIZE * 3, ph = TILE_SIZE * tileH;  // 横3タイル
