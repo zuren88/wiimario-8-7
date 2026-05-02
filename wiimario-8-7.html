@@ -2604,6 +2604,15 @@ function draw() {
   drawEffects();
   drawHUD();
 
+  // ワープフェードオーバーレイ（HUDより上・gameover/clearより上）
+  if (warpAlpha > 0) {
+    ctx.save();
+    ctx.globalAlpha = warpAlpha;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, LW, LH);
+    ctx.restore();
+  }
+
   if (gameState === 'gameover') drawOverlay('GAME OVER',    '#fff',    '▶  Enter キーでタイトルへ');
   if (gameState === 'clear')    drawOverlay('STAGE CLEAR!', '#ffee00', '▶  Enter キーでタイトルへ');
 }
