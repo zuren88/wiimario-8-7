@@ -2062,19 +2062,6 @@ function spawnItem(type, blockX, blockY) {
   });
 }
 
-function spawnRedRingReward() {
-  ITEMS.push({
-    type: 'flower',
-    x: mario.x + (mario.w - TILE_SIZE) / 2,
-    y: -LH * 0.5,
-    vx: 0, vy: 0,
-    w: TILE_SIZE, h: TILE_SIZE,
-    active: true,
-    spawning: false,
-    falling: true,
-  });
-}
-
 let ITEMS = [];
 
 // アイテム更新（物理・収集）
