@@ -1046,18 +1046,44 @@ function updateFireworks(dt) {
 
 function drawFireworks() {
   ctx.save();
+  // ゴール演出中：背景を暗くして花火を際立たせる
+  if (goalPhase !== 'none') {
+    ctx.globalAlpha = 0.45;
+    ctx.fillStyle   = '#000418';
+    ctx.fillRect(0, 0, LW, LH);
+  }
   for (const fw of FIREWORKS) {
-    // 軌跡（小さい円）
-    ctx.globalAlpha = 0.85;
+    const sx = fw.x - cameraX;
+    // 外縁グロー（大きい薄い円）
+    ctx.globalAlpha = 0.25;
     ctx.fillStyle   = fw.color;
     ctx.beginPath();
-    ctx.arc(fw.x - cameraX, fw.y, 3.5, 0, Math.PI * 2);
+    ctx.arc(sx, fw.y, 18, 0, Math.PI * 2);
     ctx.fill();
-    // 尾
-    ctx.globalAlpha = 0.25;
+    // ロケット本体
+    ctx.globalAlpha = 1.0;
+    ctx.fillStyle   = fw.color;
+    ctx.beginPath();
+    ctx.arc(sx, fw.y, 6, 0, Math.PI * 2);
+    ctx.fill();
+    // 白コア
     ctx.fillStyle   = '#ffffff';
     ctx.beginPath();
-    ctx.arc(fw.x - cameraX, fw.y + 10, 2, 0, Math.PI * 2);
+    ctx.arc(sx, fw.y, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    // 尾（3段フェードアウト）
+    ctx.globalAlpha = 0.55;
+    ctx.fillStyle   = fw.color;
+    ctx.beginPath();
+    ctx.arc(sx, fw.y + 16, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 0.28;
+    ctx.beginPath();
+    ctx.arc(sx, fw.y + 30, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 0.12;
+    ctx.beginPath();
+    ctx.arc(sx, fw.y + 44, 2, 0, Math.PI * 2);
     ctx.fill();
   }
   ctx.globalAlpha = 1;
