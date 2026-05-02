@@ -2394,7 +2394,8 @@ function update(dt) {
       mario.y  = _warpDest.y;
       mario.vx = 0;
       mario.vy = 0;
-      cameraX  = Math.max(0, Math.min(mario.x - LW / 2, STAGE_WIDTH - LW));
+      cameraX  = WARP_CAM_START_COL * TILE_SIZE; // 左端をcol550に固定
+      warpUsed  = true;
       warpState = 'fading_in';
     }
     return;
