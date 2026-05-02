@@ -163,8 +163,12 @@ const WARP_PIPES = [
 ];
 let warpState      = 'none'; // 'none' | 'fading_out' | 'fading_in'
 let warpAlpha      = 0;       // 黒オーバーレイ（0=透明, 1=完全黒）
-let warpEnterTimer = 0;       // S長押し継続秒数
+let warpEnterTimer = 0;       // D長押し継続秒数
 let _warpDest      = null;    // { x, y } ワープ先座標
+let warpUsed       = false;   // ワープ済みフラグ（カメラクランプ解除用）
+// ワープ前カメラ停止位置（右端がcol484）・ワープ後カメラ開始位置（左端がcol550）
+const WARP_CAM_STOP_COL  = 484; // ワープ前エリアのカメラ右端上限
+const WARP_CAM_START_COL = 550; // ワープ後カメラ左端の初期位置
 const PIPES = [];
 function gPipe(c, r, tileH) {
   const pw = TILE_SIZE * 3, ph = TILE_SIZE * tileH;  // 横3タイル
