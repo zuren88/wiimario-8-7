@@ -2243,11 +2243,9 @@ function drawRedRings() {
   }
 }
 
-function drawRedCoins() {
-  for (const rc of RED_COINS_RUNTIME) {
-    if (rc.collected) continue;
-    const sx = rc.x - cameraX;
-    if (sx + rc.w < 0 || sx > LW) continue;
+function _drawRedCoins_removed() {
+    const sx = 0 - 0;
+    if (sx < 0 || sx > LW) return;
     ctx.save();
     if (imgReady('コイン赤')) {
       ctx.drawImage(IMGS['コイン赤'], sx, rc.y, rc.w, rc.h);
