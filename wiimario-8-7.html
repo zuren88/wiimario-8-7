@@ -2384,7 +2384,7 @@ function update(dt) {
   // ── ワープフェード処理（通常ゲームロジックより先に処理）──
   if (warpState === 'fading_out') {
     warpAlpha = Math.min(1, warpAlpha + dt / 0.35);
-    mario.y  += TILE_SIZE * 3 * dt; // 土管に沈む演出
+    mario.x  += TILE_SIZE * 3 * dt; // 横向き土管に右へ入る演出
     if (warpAlpha >= 1) {
       mario.x  = _warpDest.x;
       mario.y  = _warpDest.y;
